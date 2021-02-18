@@ -1,4 +1,11 @@
 import { queryNotices } from '@/services/user';
+import { message } from 'antd';
+import {
+  getProvinces,
+  getCities,
+  getAreas,
+} from '@/services/global';
+
 const GlobalModel = {
   namespace: 'global',
   state: {
@@ -6,65 +13,26 @@ const GlobalModel = {
     notices: [],
   },
   effects: {
-    *fetchNotices(_, { call, put, select }) {
-      const data = yield call(queryNotices);
-      yield put({
-        type: 'saveNotices',
-        payload: data,
-      });
-      const unreadCount = yield select(
-        (state) => state.global.notices.filter((item) => !item.read).length,
-      );
-      yield put({
-        type: 'user/changeNotifyCount',
-        payload: {
-          totalCount: data.length,
-          unreadCount,
-        },
-      });
+    *getProvinces({ payload, callback }, { call }) {
+      const res = yield call(getProvinces, payload);
+      if (res.code === 200) {
+        callback(res);
+        // message.success('操作成功');
+      }
     },
-
-    *clearNotices({ payload }, { put, select }) {
-      yield put({
-        type: 'saveClearedNotices',
-        payload,
-      });
-      const count = yield select((state) => state.global.notices.length);
-      const unreadCount = yield select(
-        (state) => state.global.notices.filter((item) => !item.read).length,
-      );
-      yield put({
-        type: 'user/changeNotifyCount',
-        payload: {
-          totalCount: count,
-          unreadCount,
-        },
-      });
+    *getCities({ payload, callback }, { call }) {
+      const res = yield call(getCities, payload);
+      if (res.code === 200) {
+        callback(res);
+        // message.success('操作成功');
+      }
     },
-
-    *changeNoticeReadState({ payload }, { put, select }) {
-      const notices = yield select((state) =>
-        state.global.notices.map((item) => {
-          const notice = { ...item };
-
-          if (notice.id === payload) {
-            notice.read = true;
-          }
-
-          return notice;
-        }),
-      );
-      yield put({
-        type: 'saveNotices',
-        payload: notices,
-      });
-      yield put({
-        type: 'user/changeNotifyCount',
-        payload: {
-          totalCount: notices.length,
-          unreadCount: notices.filter((item) => !item.read).length,
-        },
-      });
+    *getAreas({ payload, callback }, { call }) {
+      const res = yield call(getAreas, payload);
+      if (res.code === 200) {
+        callback(res);
+        // message.success('操作成功');
+      }
     },
   },
   reducers: {

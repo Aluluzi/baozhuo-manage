@@ -2,67 +2,80 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import {
-  Input,
+  Select,
   Form,
-  DatePicker,
-  Button,
-  Row
+  Row,
+  Button
 } from 'antd';
+import _STATUS from "../../../../../../../drugmall-manage/src/utils/config";
 
-const { RangePicker } = DatePicker;
+const { Option } = Select;
+const boxStyle = {
+  background:'#fff',
+  padding:20
+}
 
 const HookProps = props => {
 
   const { visible, onSearch, form, info, dispatch } = props;
 
   useEffect(()=>{
-    if(!visible){
-      form.resetFields()
-    }
+    // if(!visible){
+    //   form.resetFields()
+    // }
   },[visible])
 
-  const onFinish = () => {
-    form.validateFields((err, values) => {
-      if (!err) {
-        for (let i in values) !values[i] && delete values[i];
-        if (values.date && values.date.length > 0) {
-          values.created_at = []
-          values.created_at[0] = moment(values.date[0]).format('YYYY-MM-DD 00:00:00');
-          values.created_at[1] = moment(values.date[1]).format('YYYY-MM-DD 23:59:59');
-
-          delete values.date
-        }
-        onSearch(values);
-      }
-    });
+  const onFinish = (values) => {
+    console.log(values)
+    // values().then(values => {
+    //   // Do something with value
+    // });
+    // form.validateFields((err, values) => {
+    //   if (!err) {
+    //     for (let i in values) !values[i] && delete values[i];
+    //     if (values.date && values.date.length > 0) {
+    //       values.created_at = []
+    //       values.created_at[0] = moment(values.date[0]).format('YYYY-MM-DD 00:00:00');
+    //       values.created_at[1] = moment(values.date[1]).format('YYYY-MM-DD 23:59:59');
+    //
+    //       delete values.date
+    //     }
+    //     onSearch(values);
+    //   }
+    // });
   };
 
-  const handleFormReset = () => {
-    form.resetFields();
-    onSearch();
+  const handleChange = () => {
+    console.log('change')
   };
+
+  const handleFormReset = ()=>{
+
+  }
 
   return (
-    <Form layout="inline"  onFinish={onFinish}>
-      <Row type="flex">
-
-        {/*<Form.Item label="活动标题" name="title">*/}
-        {/*  {getFieldDecorator('title')(<Input placeholder="请输入标题"/>)}*/}
-        {/*</Form.Item>*/}
-        {/*<Form.Item label="记录时间">*/}
-        {/*  {getFieldDecorator('date')(<RangePicker style={{ width: 240 }} />)}*/}
-        {/*</Form.Item>*/}
-
-        {/*<Form.Item>*/}
-        {/*  <Button type="primary" onClick={handleSearch}>*/}
-        {/*    查询*/}
-        {/*  </Button>*/}
-        {/*  <Button style={{ marginLeft: 20 }} onClick={handleFormReset}>*/}
-        {/*    重置*/}
-        {/*  </Button>*/}
-        {/*</Form.Item>*/}
-      </Row>
-    </Form>
+    <div style={boxStyle}>
+      <Form layout="inline"  onFinish={onFinish}>
+        <Form.Item name="area"  >
+          <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleChange}>
+            <Option value="jack">Jack</Option>
+            <Option value="lucy">Lucy</Option>
+            <Option value="disabled" disabled>
+              Disabled
+            </Option>
+            <Option value="Yiminghe">yiminghe</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType={onFinish}>
+            查询
+          </Button>
+          <Button style={{ marginLeft: 20 }} onClick={handleFormReset}>
+            重置
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
   )
 }
 

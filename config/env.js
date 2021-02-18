@@ -1,17 +1,17 @@
 const configs = {
   // 开发环境
   dev: {
-    API_SERVER: 'http://fast-drug.daily.yunhutech.com',
+    API_SERVER: 'https://www.baozhuoyl.com',
     H5_URL: 'https://static.daily.yunhutech.com',
   },
   // 测试环境
   daily: {
-    API_SERVER: 'http://fast-drug.daily.yunhutech.com',
+    API_SERVER: 'https://www.baozhuoyl.com',
     H5_URL: 'https://static.daily.yunhutech.com',
   },
-  // 本地
+  // 正式
   prod: {
-    API_SERVER: 'http://drug.yunhumedical.com',
+    API_SERVER: 'https://www.baozhuoyl.com',
     H5_URL: 'https://static.mjiankang.com',
   },
 };

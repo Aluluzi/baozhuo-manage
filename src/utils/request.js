@@ -4,8 +4,9 @@
  */
 import { extend } from 'umi-request';
 import { notification, message } from 'antd';
-import { getUserInfo } from '@/services/user';
-import router from 'umi/router';
+// import { getUserInfo } from '@/services/user';
+import {useHistory} from "react-router-dom";
+// import router from 'umi/router';
 import configs from '../../config/env';
 
 const codeMessage = {
@@ -33,6 +34,7 @@ const errorHandler = error => {
   const { response = {} } = error;
   const errortext = codeMessage[response.status] || response.statusText;
   const { status, url } = response;
+  const router = useHistory()
 
   if (status === 302) {
     notification.error({
@@ -63,9 +65,10 @@ const errorHandler = error => {
   }
 };
 
-// export const ajaxPrefix = 'http://drug.yunhumedical.com';
+export const ajaxPrefix = 'https://www.baozhuoyl.com';
 // export const ajaxPrefix = 'http://testmedicine.yunhuyj.com';
-export const ajaxPrefix = configs[process.env.API_ENV].API_SERVER;
+// console.log(configs[process.env.API_ENV])
+// export const ajaxPrefix = configs[process.env.API_ENV].API_SERVER;
 
 /**
  * 配置request请求时的默认参数
@@ -77,7 +80,8 @@ const request = extend({
 });
 
 request.interceptors.request.use((url, options) => {
-  const userInfo = getUserInfo();
+  // const userInfo = getUserInfo();
+  const userInfo = {token:'13'};
 
   if (userInfo) {
     if (options.method === 'upload') {

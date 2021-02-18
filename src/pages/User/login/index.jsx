@@ -16,30 +16,19 @@ const HookProps = props => {
 
   const handleSubmit = (values) => {
 
-    console.log(33)
-    history.replace('/');
+    // history.replace('/');
+    console.log(values)
+    dispatch({ type: 'login/login', payload: values });
 
-    // form.validateFields({ force: true }, (err, values) => {
-    //   if (!err) {
-    //     // values.password = new MD5().update(values.password).digest('hex');
-    //     dispatch({ type: 'login/login', payload: values });
-    //   }
-    // });
-    //
-    // dispatch({
-    //   type: 'login/login',
-    //   payload: {...values, type},
-    // });
   };
 
   return (
     <div className={styles.main}>
-      <Form className="login-form">
-        <Form.Item>
+      <Form className="login-form" onFinish={handleSubmit}>
+        <Form.Item  name="username"
+                    rules={[{required: true, message: '请输入用户名!'}]}>
           <Input
             size="large"
-            name="username"
-            rules={[{required: true, message: '请输入用户名!'}]}
             prefix={<UserOutlined/>}
             placeholder="用户名"
             onPressEnter={e => {
@@ -48,11 +37,10 @@ const HookProps = props => {
             }}
           />
         </Form.Item>
-        <Form.Item>
+        <Form.Item name="password"
+                   rules={[{required: true, message: '请输入密码!'}]}>
           <Input
             size="large"
-            name="password"
-            rules={[{required: true, message: '请输入密码!'}]}
             prefix={<LockOutlined/>}
             type="password"
             placeholder="密码"
@@ -68,8 +56,8 @@ const HookProps = props => {
           block
           shape="round"
           loading={submitting}
-          onClick={handleSubmit}
           className={styles.submit_btn}
+          htmlType="submit"
         >
           登录
         </Button>

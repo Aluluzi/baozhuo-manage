@@ -1,9 +1,13 @@
 import { stringify } from 'querystring';
 import { history } from 'umi';
-import { fakeAccountLogin } from '@/services/login';
+import { login } from '@/services/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
+import { routerRedux } from 'dva/router';
 import { message } from 'antd';
+import {initAuthority} from "../../../../drugmall-manage/src/utils/authority";
+import {setUserInfo} from "../../../../drugmall-manage/src/services/user";
+import {reloadAuthorized} from "../../../../drugmall-manage/src/utils/Authorized";
 const Model = {
   namespace: 'login',
   state: {
@@ -11,35 +15,39 @@ const Model = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const res = yield call(login, payload);
       yield put({
         type: 'changeLoginStatus',
-        payload: response,
+        payload: res,
       }); // Login successfully
-
-      if (response.status === 'ok') {
-        const urlParams = new URL(window.location.href);
-        const params = getPageQuery();
-        message.success('🎉 🎉 🎉  登录成功！');
-        let { redirect } = params;
-
-        if (redirect) {
-          const redirectUrlParams = new URL(redirect);
-
-          if (redirectUrlParams.origin === urlParams.origin) {
-            redirect = redirect.substr(urlParams.origin.length);
-
-            if (redirect.match(/^\/.*#/)) {
-              redirect = redirect.substr(redirect.indexOf('#') + 1);
-            }
-          } else {
-            window.location.href = '/';
-            return;
-          }
-        }
-
-        history.replace(redirect || '/');
+      if (res.code === 200) {
+        setUserInfo(res.data);
+        yield put(routerRedux.replace('/'));
       }
+
+      // if (response.status === 'ok') {
+      //   const urlParams = new URL(window.location.href);
+      //   const params = getPageQuery();
+      //   message.success('🎉 🎉 🎉  登录成功！');
+      //   let { redirect } = params;
+      //
+      //   if (redirect) {
+      //     const redirectUrlParams = new URL(redirect);
+      //
+      //     if (redirectUrlParams.origin === urlParams.origin) {
+      //       redirect = redirect.substr(urlParams.origin.length);
+      //
+      //       if (redirect.match(/^\/.*#/)) {
+      //         redirect = redirect.substr(redirect.indexOf('#') + 1);
+      //       }
+      //     } else {
+      //       window.location.href = '/';
+      //       return;
+      //     }
+      //   }
+      //
+      //   history.replace(redirect || '/');
+      // }
     },
 
     logout() {

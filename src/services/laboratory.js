@@ -7,3 +7,5 @@ export async function saveInfo(data) {
   return request('/api/lab/save', { method: 'post', data });
 }
 
+
+

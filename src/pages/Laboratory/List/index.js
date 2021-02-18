@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import {Button,Table,Switch } from 'antd'
 // import EditInfo from './components/EditInfo'
 // import CreateLink from './components/CreateLink'
-// import SearchInfo from './components/SearchInfo'
+import SearchInfo from './components/SearchInfo'
 
 const HookProps = props => {
 
@@ -48,7 +48,6 @@ const HookProps = props => {
     {
       title: '编号',
       dataIndex: 'title',
-      width: 150,
     },
     {
       title: '区域',
@@ -72,8 +71,8 @@ const HookProps = props => {
   ];
   return (
     <>
-      {/*<SearchInfo onSearch={(values)=>setSearchContent(values)}/>*/}
-      <Button type="primary" style={{marginBottom:'15px'}} onClick={() => {
+      <SearchInfo onSearch={(values)=>setSearchContent(values)}/>
+      <Button type="primary" style={{margin:'15px 0'}} onClick={() => {
         setInfo({})
         setVisible('edit')
       }}>新增实验室</Button>
@@ -92,7 +91,7 @@ const HookProps = props => {
   );
 }
 
-export default connect(({ laboratoty}) => ({
-  list:laboratoty.laboratotyInfo.list,
-  pagination:laboratoty.laboratotyInfo.pagination,
+export default connect(({ laboratory}) => ({
+  list:laboratory.laboratoryInfo.list,
+  pagination:laboratory.laboratoryInfo.pagination,
 }))(HookProps);

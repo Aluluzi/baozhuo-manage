@@ -3,15 +3,15 @@
  * You can view component api by:
  * https://github.com/ant-design/ant-design-pro-layout
  */
-import ProLayout, { DefaultFooter, SettingDrawer } from '@ant-design/pro-layout';
+import ProLayout, { SettingDrawer } from '@ant-design/pro-layout';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Link, useIntl, connect, history } from 'umi';
-import { GithubOutlined } from '@ant-design/icons';
 import { Result, Button } from 'antd';
 import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { getMatchMenu } from '@umijs/route-utils';
 import logo from '../assets/logo.svg';
+
 const noMatch = (
   <Result
     status={403}
@@ -24,10 +24,10 @@ const noMatch = (
     }
   />
 );
-
 /**
  * use Authorized check all menu item
  */
+
 const menuDataRender = (menuList) =>
   menuList.map((item) => {
     const localItem = {
@@ -49,9 +49,10 @@ const BasicLayout = (props) => {
   const menuDataRef = useRef([]);
   useEffect(() => {
     if (dispatch) {
-      dispatch({
-        type: 'user/fetchCurrent',
-      });
+      // 获取用户信息--jlx
+      // dispatch({
+      //   type: 'user/fetchCurrent',
+      // });
     }
   }, []);
   /**
@@ -77,52 +78,63 @@ const BasicLayout = (props) => {
   const { formatMessage } = useIntl();
   return (
     <>
-      <ProLayout
-        logo={logo}
-        formatMessage={formatMessage}
-        {...props}
-        {...settings}
-        onCollapse={handleMenuCollapse}
-        onMenuHeaderClick={() => history.push('/')}
-        menuItemRender={(menuItemProps, defaultDom) => {
-          if (
-            menuItemProps.isUrl ||
-            !menuItemProps.path ||
-            location.pathname === menuItemProps.path
-          ) {
-            return defaultDom;
-          }
+      <>
+        <ProLayout
+          logo={logo}
+          formatMessage={formatMessage}
+          {...props}
+          {...settings}
+          onCollapse={handleMenuCollapse}
+          onMenuHeaderClick={() => history.push('/')}
+          menuItemRender={(menuItemProps, defaultDom) => {
+            if (
+              menuItemProps.isUrl ||
+              !menuItemProps.path ||
+              location.pathname === menuItemProps.path
+            ) {
+              return defaultDom;
+            }
 
-          return <Link to={menuItemProps.path}>{defaultDom}</Link>;
-        }}
-        breadcrumbRender={(routers = []) => [
-          {
-            path: '/',
-            breadcrumbName: formatMessage({
-              id: 'menu.home',
-            }),
-          },
-          ...routers,
-        ]}
-        itemRender={(route, params, routes, paths) => {
-          const first = routes.indexOf(route) === 0;
-          return first ? (
-            <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
-          ) : (
-            <span>{route.breadcrumbName}</span>
-          );
-        }}
-        menuDataRender={menuDataRender}
-        rightContentRender={() => <RightContent />}
-        postMenuData={(menuData) => {
-          menuDataRef.current = menuData || [];
-          return menuData || [];
-        }}
-      >
-        <Authorized authority={authorized.authority} noMatch={noMatch}>
-          {children}
-        </Authorized>
-      </ProLayout>
+            return <Link to={menuItemProps.path}>{defaultDom}</Link>;
+          }}
+          breadcrumbRender={(routers = []) => [
+            {
+              path: '/',
+              breadcrumbName: formatMessage({
+                id: 'menu.home',
+              }),
+            },
+            ...routers,
+          ]}
+          itemRender={(route, params, routes, paths) => {
+            const first = routes.indexOf(route) === 0;
+            return first ? (
+              <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
+            ) : (
+              <span>{route.breadcrumbName}</span>
+            );
+          }}
+          menuDataRender={menuDataRender}
+          rightContentRender={() => <RightContent />}
+          postMenuData={(menuData) => {
+            menuDataRef.current = menuData || [];
+            return menuData || [];
+          }}
+        >
+          <Authorized authority={authorized.authority} noMatch={noMatch}>
+            {children}
+          </Authorized>
+        </ProLayout>
+        <SettingDrawer
+          settings={settings}
+          onSettingChange={(config) =>
+            dispatch({
+              type: 'settings/changeSetting',
+              payload: config,
+            })
+          }
+        />
+      </>
       <SettingDrawer
         settings={settings}
         onSettingChange={(config) =>

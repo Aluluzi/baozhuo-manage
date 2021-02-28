@@ -15,8 +15,8 @@ export const request = (url, options) => {
 
   let paramsArray = [];
   //拼接参数
-  Object.keys(defaultOptions.params).forEach(key =>
-    paramsArray.push(key + '=' + defaultOptions.params[key])
+  Object.keys(defaultOptions.params).forEach((key) =>
+    paramsArray.push(key + '=' + defaultOptions.params[key]),
   );
   if (url.search(/\?/) === -1) {
     url += '?' + paramsArray.join('&');
@@ -24,7 +24,7 @@ export const request = (url, options) => {
     url += '&' + paramsArray.join('&');
   }
 
-  return fetch(`${ajaxPrefix}${url}`, defaultOptions).then(res => res.blob());
+  return fetch(`${ajaxPrefix}${url}`, defaultOptions).then((res) => res.blob());
 };
 
 export default request;

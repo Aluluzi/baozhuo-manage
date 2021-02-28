@@ -11,7 +11,7 @@ export default defineConfig({
     hmr: true,
   },
   history: {
-    type: 'browser',
+    type: 'hash', // 可选 browser、hash 和 memory
   },
   locale: {
     // default zh-CN
@@ -46,18 +46,6 @@ export default defineConfig({
               redirect: '/user/login',
             },
             {
-              name: 'register-result',
-              icon: 'smile',
-              path: '/user/register-result',
-              component: './user/register-result',
-            },
-            {
-              name: 'register',
-              icon: 'smile',
-              path: '/user/register',
-              component: './user/register',
-            },
-            {
               component: '404',
             },
           ],
@@ -74,13 +62,13 @@ export default defineConfig({
             },
             {
               path: '/homePage',
-              name:'home',
+              name: '首页',
               icon: 'home',
               component: './homePage',
             },
             {
               path: '/laboratory',
-              name: 'laboratory',
+              name: '实验室相关',
               icon: 'shop',
               routes: [
                 {
@@ -89,199 +77,101 @@ export default defineConfig({
                 },
                 {
                   path: '/laboratory/list',
-                  name: 'list',
+                  name: '实验室',
                   component: './Laboratory/List',
                 },
                 {
+                  name: '耗材',
+                  icon: 'smile',
+                  path: '/laboratory/consumables',
+                  component: './Laboratory/Consumables',
+                },
+                {
+                  name: '项目分类',
+                  icon: 'smile',
                   path: '/laboratory/projectClassify',
-                  name: 'classify',
-                  component: './Laboratory/projectClassify',
+                  component: './Laboratory/ProjectClassify',
                 },
               ],
             },
             {
-              path: '/list',
-              icon: 'table',
-              name: 'list',
+              path: '/project',
+              name: '项目',
+              icon: 'shop',
+              component: './Project',
+            },
+            {
+              path: '/order',
+              name: '订单',
+              icon: 'shop',
               routes: [
                 {
-                  path: '/list/search',
-                  name: 'search-list',
-                  component: './list/search',
-                  routes: [
-                    {
-                      path: '/list/search',
-                      redirect: '/list/search/articles',
-                    },
-                    {
-                      name: 'articles',
-                      icon: 'smile',
-                      path: '/list/search/articles',
-                      component: './list/search/articles',
-                    },
-                    {
-                      name: 'projects',
-                      icon: 'smile',
-                      path: '/list/search/projects',
-                      component: './list/search/projects',
-                    },
-                    {
-                      name: 'applications',
-                      icon: 'smile',
-                      path: '/list/search/applications',
-                      component: './list/search/applications',
-                    },
-                  ],
+                  path: '/order/dayOrder',
+                  name: '日结订单',
+                  component: './Order/DayOrder',
                 },
                 {
-                  path: '/',
-                  redirect: '/list/table-list',
+                  hideInMenu: true,
+                  path: '/order/dayOrder/details',
+                  name: '订单详情',
+                  component: './Order/Details',
                 },
                 {
-                  name: 'table-list',
+                  hideInMenu: true,
+                  path: '/order/monthOrder/details',
+                  name: '订单详情',
+                  component: './Order/Details',
+                },
+                {
+                  name: '月结订单',
                   icon: 'smile',
-                  path: '/list/table-list',
-                  component: './list/table-list',
-                },
-                {
-                  name: 'basic-list',
-                  icon: 'smile',
-                  path: '/list/basic-list',
-                  component: './list/basic-list',
-                },
-                {
-                  name: 'card-list',
-                  icon: 'smile',
-                  path: '/list/card-list',
-                  component: './list/card-list',
+                  path: '/order/monthOrder',
+                  component: './Order/MonthOrder',
                 },
               ],
             },
             {
-              path: '/profile',
-              name: 'profile',
-              icon: 'profile',
+              path: '/userInformation',
+              name: '用户信息',
+              icon: 'shop',
               routes: [
                 {
                   path: '/',
-                  redirect: '/profile/basic',
+                  redirect: '/userInformation/clinic',
                 },
                 {
-                  name: 'basic',
-                  icon: 'smile',
-                  path: '/profile/basic',
-                  component: './profile/basic',
+                  path: '/userInformation/clinic',
+                  name: '诊所信息',
+                  component: './UserInformation/Clinic',
                 },
                 {
-                  name: 'advanced',
+                  name: '医生账号',
                   icon: 'smile',
-                  path: '/profile/advanced',
-                  component: './profile/advanced',
+                  path: '/userInformation/doctor',
+                  component: './UserInformation/Doctor',
+                },
+                {
+                  name: '业务员账号',
+                  icon: 'smile',
+                  path: '/userInformation/salesman',
+                  component: './UserInformation/Salesman',
                 },
               ],
             },
             {
-              name: 'result',
-              icon: 'CheckCircleOutlined',
-              path: '/result',
+              path: '/settings',
+              name: '系统设置',
+              icon: 'shop',
               routes: [
                 {
                   path: '/',
-                  redirect: '/result/success',
+                  redirect: '/settings/setPassword',
                 },
                 {
-                  name: 'success',
-                  icon: 'smile',
-                  path: '/result/success',
-                  component: './result/success',
-                },
-                {
-                  name: 'fail',
-                  icon: 'smile',
-                  path: '/result/fail',
-                  component: './result/fail',
-                },
-              ],
-            },
-            {
-              name: 'exception',
-              icon: 'warning',
-              path: '/exception',
-              routes: [
-                {
-                  path: '/',
-                  redirect: '/exception/403',
-                },
-                {
-                  name: '403',
-                  icon: 'smile',
-                  path: '/exception/403',
-                  component: './exception/403',
-                },
-                {
-                  name: '404',
-                  icon: 'smile',
-                  path: '/exception/404',
-                  component: './exception/404',
-                },
-                {
-                  name: '500',
-                  icon: 'smile',
-                  path: '/exception/500',
-                  component: './exception/500',
-                },
-              ],
-            },
-            {
-              name: 'account',
-              icon: 'user',
-              path: '/account',
-              routes: [
-                {
-                  path: '/',
-                  redirect: '/account/center',
-                },
-                {
-                  name: 'center',
-                  icon: 'smile',
-                  path: '/account/center',
-                  component: './account/center',
-                },
-                {
-                  name: 'settings',
-                  icon: 'smile',
-                  path: '/account/settings',
-                  component: './account/settings',
-                },
-              ],
-            },
-            {
-              name: 'editor',
-              icon: 'highlight',
-              path: '/editor',
-              routes: [
-                {
-                  path: '/',
-                  redirect: '/editor/flow',
-                },
-                {
-                  name: 'flow',
-                  icon: 'smile',
-                  path: '/editor/flow',
-                  component: './editor/flow',
-                },
-                {
-                  name: 'mind',
-                  icon: 'smile',
-                  path: '/editor/mind',
-                  component: './editor/mind',
-                },
-                {
-                  name: 'koni',
-                  icon: 'smile',
-                  path: '/editor/koni',
-                  component: './editor/koni',
-                },
+                  path: '/settings/setPassword',
+                  name: '修改密码',
+                  component: './settings/SetPassword',
+                }
               ],
             },
             {

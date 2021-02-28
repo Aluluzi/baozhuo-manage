@@ -3,6 +3,7 @@ import React from 'react';
 import { connect } from 'umi';
 import Avatar from './AvatarDropdown';
 import styles from './index.less';
+// import NoticeIconView from './NoticeIconView';
 const ENVTagColor = {
   dev: 'orange',
   test: 'green',
@@ -19,6 +20,7 @@ const GlobalHeaderRight = (props) => {
 
   return (
     <div className={className}>
+      {/* <NoticeIconView /> */}
       <Avatar menu />
       {REACT_APP_ENV && (
         <span>

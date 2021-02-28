@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Button, Form, Card, message, Radio} from 'antd'; // import TagSelect from '@/components/TagSelect';
-
+import {Button, Form, Card, message, Radio, Upload} from 'antd'; // import TagSelect from '@/components/TagSelect';
 import styles from './index.less';
 import TableBasic from './TableBasic';
 import {saveInspection, getInspectionList, exportInspection} from '@/services/project';
@@ -25,6 +24,7 @@ const Project = () => {
   const [labList, setLab] = useState([]);
   const [currentCategoryId, setCurrentCategoryId] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
+  const [loading, setLoading] = useState(false)
   /**
    * 添加节点
    * @param fields
@@ -187,6 +187,18 @@ const Project = () => {
     }
   }
 
+  /**
+   * 导出模板
+   */
+
+  async function doExportTemplate() {
+    try {
+      window.open(`${ajaxPrefix}/file/import-item-tpl`);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -214,6 +226,37 @@ const Project = () => {
       });
     },
   });
+
+  /**
+   * 批量上传处理
+   * @param file
+   * @returns {boolean}
+   */
+  function beforeUpload(file) {
+    console.log(file)
+    // const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    // if (!isJpgOrPng) {
+    //   message.error('You can only upload JPG/PNG file!');
+    // }
+    // const isLt2M = file.size / 1024 / 1024 < 2;
+    // if (!isLt2M) {
+    //   message.error('Image must smaller than 2MB!');
+    // }
+    return true;
+  }
+
+  function handleChange(info) {
+    if (info.file.status === 'uploading') {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === 'done') {
+      setLoading(false);
+      // console.log(info.file.response.data)
+
+    }
+  };
+
   useEffect(() => {
     getLab();
   }, [getLab]);
@@ -258,9 +301,18 @@ const Project = () => {
               marginBottom: 0,
             }}
           >
-            <Button>批量上传</Button>
+            <Upload
+              name="file"
+              showUploadList={false}
+              action={`${ajaxPrefix}/api/inspection-item/import`}
+              beforeUpload={beforeUpload}
+              // customRequest={doImgUpload}
+              onChange={handleChange}
+            >
+              <Button loading={loading}>批量上传</Button>
+            </Upload>
             <Button onClick={() => doExport(list)}>导出项目</Button>
-            <Button onClick={() => doExport(list)}>导出模板</Button>
+            <Button onClick={() => doExportTemplate()}>导出模板</Button>
             <Button onClick={() => handleModalVisible(true)}>新增项目</Button>
           </FormItem>
         </Form>

@@ -1,5 +1,5 @@
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Menu, Spin } from 'antd';
+import {  Menu } from 'antd';
 import React from 'react';
 import { history, connect } from 'umi';
 import HeaderDropdown from '../HeaderDropdown';
@@ -41,12 +41,12 @@ class AvatarDropdown extends React.Component {
       </Menu>
     );
     return (
-        <HeaderDropdown overlay={menuHeaderDropdown}>
-          <span className={`${styles.action} ${styles.account}`}>
-            <span className={`${styles.name} anticon`}>admin</span>
-          </span>
-        </HeaderDropdown>
-    )
+      <HeaderDropdown overlay={menuHeaderDropdown}>
+        <span className={`${styles.action} ${styles.account}`}>
+          <span className={`${styles.name} anticon`}>admin</span>
+        </span>
+      </HeaderDropdown>
+    );
     // return userInfo && userInfo.name ? (
     //   <HeaderDropdown overlay={menuHeaderDropdown}>
     //     <span className={`${styles.action} ${styles.account}`}>

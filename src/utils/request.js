@@ -2,12 +2,12 @@
  * request 网络请求工具
  * 更详细的api文档: https://bigfish.alipay.com/doc/api#request
  */
-import { extend } from 'umi-request';
-import { notification, message } from 'antd';
-// import { getUserInfo } from '@/services/user';
-import {useHistory} from "react-router-dom";
-// import router from 'umi/router';
+import {extend} from 'umi-request';
+import {notification, message} from 'antd';
+import {getToken} from '@/services/user';
+import {getDvaApp} from 'umi';
 import configs from '../../config/env';
+// eslint-disable-next-line react-hooks/rules-of-hooks
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -30,45 +30,47 @@ const codeMessage = {
 /**
  * 异常处理程序
  */
-const errorHandler = error => {
-  const { response = {} } = error;
-  const errortext = codeMessage[response.status] || response.statusText;
-  const { status, url } = response;
-  const router = useHistory()
-
-  if (status === 302) {
+const errorHandler = (error) => {
+  const response = error;
+  // console.log(error)
+  const errortext = response.message || codeMessage[response.code] || response.statusText;
+  const {code} = response;
+  // const {url} = request
+  if (code === 302) {
     notification.error({
       message: '未登录或登录已过期，请重新登录。',
     });
     // @HACK
-    /* eslint-disable no-underscore-dangle */
-    window.g_app._store.dispatch({
+    // eslint-disable-next-line no-underscore-dangle
+    getDvaApp()._store.dispatch({
       type: 'login/logout',
     });
     return;
   }
-  notification.error({
-    message: `请求错误 ${status}: ${url}`,
-    description: errortext,
-  });
+  message.error(errortext)
+  throw error
+  // notification.error({
+  //   message: `请求错误 ${code}: ${url}`,
+  //   description: errortext,
+  // });
   // environment should not be used
-  if (status === 403) {
-    router.push('/exception/403');
-    return;
-  }
-  if (status <= 504 && status >= 500) {
-    router.push('/exception/500');
-    return;
-  }
-  if (status >= 404 && status < 422) {
-    router.push('/exception/404');
-  }
+  // if (code === 403) {
+  //   history.push('/exception/403');
+  //   return;
+  // }
+  // if (code <= 504 && code >= 500) {
+  //   history.push('/exception/500');
+  //   return;
+  // }
+  // if (code >= 404 && code < 422) {
+  //   history.push('/exception/404');
+  // }
 };
 
-export const ajaxPrefix = 'https://www.baozhuoyl.com';
+// export const ajaxPrefix = 'https://www.baozhuoyl.com';
 // export const ajaxPrefix = 'http://testmedicine.yunhuyj.com';
-// console.log(configs[process.env.API_ENV])
-// export const ajaxPrefix = configs[process.env.API_ENV].API_SERVER;
+// console.log(configs[REACT_APP_ENV])
+export const ajaxPrefix = configs[REACT_APP_ENV].API_SERVER;
 
 /**
  * 配置request请求时的默认参数
@@ -79,11 +81,12 @@ const request = extend({
   mode: 'cors',
 });
 
-request.interceptors.request.use((url, options) => {
-  // const userInfo = getUserInfo();
-  const userInfo = {token:'13'};
+request.interceptors.request.use((url, o) => {
+  const token = getToken();
+  // const userInfo = { token: '13' };
 
-  if (userInfo) {
+  let options = o
+  if (token) {
     if (options.method === 'upload') {
       options.method = 'post';
     } else {
@@ -92,12 +95,19 @@ request.interceptors.request.use((url, options) => {
         ...options,
         [type]: {
           ...options[type],
-          // salt: userInfo.salt,
-          token: userInfo.token,
         },
       };
     }
   }
+  options = {
+    ...options,
+    ...{
+      headers: {
+        Authorization: token
+      }
+    }
+  }
+  // console.log(options)
   return {
     url: url.indexOf('dio') > 0 ? url : `${ajaxPrefix}${url}`,
     // url: `${ajaxPrefix}${url}`,
@@ -105,12 +115,22 @@ request.interceptors.request.use((url, options) => {
   };
 });
 
-request.interceptors.response.use(async response => {
+request.interceptors.response.use(async (response) => {
   const res = await response.clone().json();
-  // res.msg === '用户未登录' && router.push('/user/login');
-  res.code === 302 && router.push('/user/login');
-  res.code !== 200 && message.error(res.msg);
-  return response;
+  // console.log(res)
+  // res.msg === '用户未登录' && history.push('/user/login');
+  if (res.code === 200) {
+    return Promise.resolve(res)
+  }
+  // if(res.code === 302){
+  //   history.push('/user/login');
+  // }
+  // console.log(res.code)
+  return Promise.reject(res)
+  // return response;
+}, (error) => {
+  console.log(error)
+  return Promise.reject(error)
 });
 
 export default request;

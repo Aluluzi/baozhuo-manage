@@ -1,10 +1,4 @@
-import { queryNotices } from '@/services/user';
-import { message } from 'antd';
-import {
-  getProvinces,
-  getCities,
-  getAreas,
-} from '@/services/global';
+import { getProvinces, getCities, getAreas } from '@/services/global';
 
 const GlobalModel = {
   namespace: 'global',

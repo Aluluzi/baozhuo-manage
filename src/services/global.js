@@ -1,5 +1,8 @@
-import request from "@/utils/request";
+import request from '@/utils/request';
 
+export async function getTodayStatistic(data) {
+  return request('/api/trade/today-statistic', { method: 'post', data });
+}
 export async function getProvinces(data) {
   return request('/api/address/provinces', { method: 'post', data });
 }

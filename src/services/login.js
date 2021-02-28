@@ -10,5 +10,14 @@ import request from '@/utils/request';
 // }
 
 export async function login(data) {
-  return request('/api/login', { method: 'post', data });
+  return request('/api/login', {
+    method: 'post',
+    data
+  });
+}
+export function chgMyPassword(data) {
+  return request('/api/chg-my-password', {
+    method: 'post',
+    data
+  });
 }

@@ -20,4 +20,4 @@ export const isAntDesignProOrDev = () => {
 
   return isAntDesignPro();
 };
-export const getPageQuery = () => parse(window.location.href.split('?')[1]);
+export const getPageQuery = () => parse(window.location.search.split('?')[1]);

@@ -7,31 +7,13 @@
  */
 export default {
   dev: {
-    '/api/': {
-      target: 'https://www.baozhuoyl.com',
+    '/apis': {
+      target: 'http://www.baozhuoyl.com',
       changeOrigin: true,
       pathRewrite: {
-        '^': '',
+        '^/apis': '/',
       },
     },
-  },
-  test: {
-    '/api/': {
-      target: 'https://www.baozhuoyl.com',
-      changeOrigin: true,
-      pathRewrite: {
-        '^': '',
-      },
-    },
-  },
-  pre: {
-    '/api/': {
-      target: 'your pre url',
-      changeOrigin: true,
-      pathRewrite: {
-        '^': '',
-      },
-    },
-  },
+  }
 };
 

@@ -9,12 +9,7 @@ export async function saveLab(data) {
 export async function getOrderDetails(id) {
   return request(`/api/trade/${id}`, { method: 'post' });
 }
-export async function saveTube(data) {
-  return request('/api/tube/save', { method: 'post', data });
-}
-export async function getCategoryList(data) {
-  return request('/api/category/list', { method: 'post', data });
-}
-export async function saveInspection(data) {
-  return request('/api/inspection-item/save', { method: 'post', data });
+
+export async function exportTrade(data) {
+  return request('/api/trade/export', { method: 'post', data });
 }

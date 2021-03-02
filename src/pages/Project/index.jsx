@@ -1,12 +1,13 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Button, Form, Card, message, Radio, Upload} from 'antd'; // import TagSelect from '@/components/TagSelect';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Button, Form, Card, message, Radio, Upload } from 'antd'; // import TagSelect from '@/components/TagSelect';
 import styles from './index.less';
 import TableBasic from './TableBasic';
-import {saveInspection, getInspectionList, exportInspection} from '@/services/project';
-import {PageContainer} from '@ant-design/pro-layout';
-import {getCategoryList, getLabList} from '@/services/laboratory';
+import { saveInspection, getInspectionList, exportInspection } from '@/services/project';
+import { PageContainer } from '@ant-design/pro-layout';
+import { getCategoryList, getLabList } from '@/services/laboratory';
 import CreateForm from './components/CreateForm';
-import {ajaxPrefix} from '@/utils/request';
+import { ajaxPrefix } from '@/utils/request';
+import { getToken } from '@/services/user';
 
 const FormItem = Form.Item;
 
@@ -24,13 +25,13 @@ const Project = () => {
   const [labList, setLab] = useState([]);
   const [currentCategoryId, setCurrentCategoryId] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   /**
    * 添加节点
    * @param fields
    */
 
-  const handleAdd = async fields => {
+  const handleAdd = async (fields) => {
     const hide = message.loading('正在添加');
 
     try {
@@ -52,7 +53,7 @@ const Project = () => {
 
   function toUpdate(data) {
     // console.log(data)
-    const {Items, ...obj} = data;
+    const { Items, ...obj } = data;
     setStepFormValues({
       ...obj,
       ...{
@@ -62,7 +63,7 @@ const Project = () => {
     handleModalVisible(true);
   } // 获取列表
 
-  const getList = async ({labId, categoryId, size, page}) => {
+  const getList = async ({ labId, categoryId, size, page }) => {
     try {
       const res = await getInspectionList({
         size,
@@ -74,7 +75,7 @@ const Project = () => {
       setList(res.data.data || []); // eslint-disable-next-line no-use-before-define
 
       // eslint-disable-next-line no-use-before-define
-      setPagination(e => {
+      setPagination((e) => {
         return {
           ...e,
           ...{
@@ -88,7 +89,7 @@ const Project = () => {
   }; // 获取类目列表
 
   const getProjectClassify = useCallback(
-    async v => {
+    async (v) => {
       try {
         const res = await getCategoryList({
           size: 100,
@@ -109,7 +110,7 @@ const Project = () => {
         setList([]); // eslint-disable-next-line no-use-before-define
 
         // eslint-disable-next-line no-use-before-define
-        setPagination(e => {
+        setPagination((e) => {
           return {
             ...e,
             ...{
@@ -120,7 +121,7 @@ const Project = () => {
         console.log(err);
       }
     },
-    [currentLab, currentCategoryId]
+    [currentLab, currentCategoryId],
   ); // 获取实验室列表
 
   const getLab = useCallback(async () => {
@@ -172,7 +173,7 @@ const Project = () => {
 
   async function doExport(l) {
     try {
-      const ids = l.map(item => item.id);
+      const ids = l.map((item) => item.id);
       const res = await exportInspection({
         labId: params.current.currentLab,
         categoryId: params.current.currentCategoryId,
@@ -207,7 +208,7 @@ const Project = () => {
     showSizeChanger: true,
     onChange: (page, pageSize) => {
       // console.log(page, pageSize)
-      setPagination(e => {
+      setPagination((e) => {
         return {
           ...e,
           ...{
@@ -233,7 +234,7 @@ const Project = () => {
    * @returns {boolean}
    */
   function beforeUpload(file) {
-    console.log(file)
+    console.log(file);
     // const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     // if (!isJpgOrPng) {
     //   message.error('You can only upload JPG/PNG file!');
@@ -252,10 +253,15 @@ const Project = () => {
     }
     if (info.file.status === 'done') {
       setLoading(false);
+      getList({
+        labId: params.current.currentLab,
+        categoryId: params.current.currentCategoryId,
+        size: params.current.size,
+        page: params.current.page,
+      });
       // console.log(info.file.response.data)
-
     }
-  };
+  }
 
   useEffect(() => {
     getLab();
@@ -276,7 +282,7 @@ const Project = () => {
         <Form>
           <FormItem>
             <Radio.Group value={currentLab} onChange={handleLabChange} buttonStyle="solid">
-              {labList.map(item => (
+              {labList.map((item) => (
                 <Radio.Button value={item.id} key={item.id}>
                   {item.name}
                 </Radio.Button>
@@ -289,7 +295,7 @@ const Project = () => {
               onChange={handleCategoryChange}
               buttonStyle="solid"
             >
-              {categoryList.map(item => (
+              {categoryList.map((item) => (
                 <Radio.Button value={item.id} key={item.id}>
                   {item.name}
                 </Radio.Button>
@@ -303,6 +309,8 @@ const Project = () => {
           >
             <Upload
               name="file"
+              headers={{ Authorization: getToken() }}
+              data={{ labId: currentLab, categoryId: currentCategoryId }}
               showUploadList={false}
               action={`${ajaxPrefix}/api/inspection-item/import`}
               beforeUpload={beforeUpload}
@@ -322,11 +330,11 @@ const Project = () => {
           marginTop: 24,
         }}
       >
-        <TableBasic toUpdate={toUpdate} data={list} pagination={pagination}/>
+        <TableBasic toUpdate={toUpdate} data={list} pagination={pagination} />
       </Card>
       {createModalVisible ? (
         <CreateForm
-          onSubmit={async value => {
+          onSubmit={async (value) => {
             const data = {
               ...value,
               ...{

@@ -6,7 +6,7 @@ const configs = {
   },
   // 正式
   prod: {
-    API_SERVER: 'https://www.baozhuoyl.com',
+    API_SERVER: 'https://admin.baozhuoyl.com',
     // H5_URL: 'http://static.mjiankang.com',
   },
 };

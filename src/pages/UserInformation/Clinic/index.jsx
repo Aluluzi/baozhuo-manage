@@ -1,5 +1,5 @@
 import {PlusOutlined} from '@ant-design/icons';
-import {Button, message, Modal} from 'antd';
+import {Button, message, Modal, Select} from 'antd';
 import React, {useState, useRef} from 'react';
 import {PageContainer} from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
@@ -10,6 +10,7 @@ import {connect} from "dva";
 import {ExclamationCircleOutlined} from '@ant-design/icons';
 
 const {confirm} = Modal;
+const {Option} = Select
 
 /**
  * 添加节点
@@ -57,9 +58,10 @@ const handleUpdate = async (data, actionRef) => {
 const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
+  const [settleMethod, setSettleMethod] = useState(null);
   const actionRef = useRef();
   const queryParams = useRef({
-    // status:1,
+    settleMethod: null,
     size: null,
     page: null,
     provinceId: null,
@@ -67,6 +69,30 @@ const TableList = () => {
     areaId: null
   });
   const columns = [
+    {
+      title: '类型',
+      dataIndex: 'settleMethod',
+      // colSize:2,
+      hideInForm: true,
+      hideInTable: true,
+      renderFormItem: () => {
+        function handleChange(data) {
+          queryParams.current = {...queryParams.current, ...{settleMethod: data}}
+          setSettleMethod(data)
+          actionRef.current.reloadAndRest()
+          // console.log(queryParams.current)
+        }
+
+        return (
+          <Select value={settleMethod} style={{width: 120}} placeholder="诊所"
+                  onChange={(v) => handleChange(v)}>
+            <Option value={null}>全部</Option>
+            <Option value={1}>日结</Option>
+            <Option value={2}>月结</Option>
+          </Select>
+        )
+      },
+    },
     {
       title: '区域',
       dataIndex: 'updatedAt',

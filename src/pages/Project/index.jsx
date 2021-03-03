@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Form, Card, message, Radio, Upload } from 'antd'; // import TagSelect from '@/components/TagSelect';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Button, Form, Card, message, Radio, Upload, Select} from 'antd'; // import TagSelect from '@/components/TagSelect';
 import styles from './index.less';
 import TableBasic from './TableBasic';
-import { saveInspection, getInspectionList, exportInspection } from '@/services/project';
-import { PageContainer } from '@ant-design/pro-layout';
-import { getCategoryList, getLabList } from '@/services/laboratory';
+import {saveInspection, getInspectionList, exportInspection} from '@/services/project';
+import {PageContainer} from '@ant-design/pro-layout';
+import {getCategoryList, getLabList} from '@/services/laboratory';
 import CreateForm from './components/CreateForm';
-import { ajaxPrefix } from '@/utils/request';
-import { getToken } from '@/services/user';
+import {ajaxPrefix} from '@/utils/request';
+import {getToken} from '@/services/user';
 
 const FormItem = Form.Item;
 
@@ -53,7 +53,7 @@ const Project = () => {
 
   function toUpdate(data) {
     // console.log(data)
-    const { Items, ...obj } = data;
+    const {Items, ...obj} = data;
     setStepFormValues({
       ...obj,
       ...{
@@ -61,9 +61,11 @@ const Project = () => {
       },
     });
     handleModalVisible(true);
-  } // 获取列表
+  }
 
-  const getList = async ({ labId, categoryId, size, page }) => {
+  // 获取列表
+
+  const getList = async ({labId, categoryId, size, page}) => {
     try {
       const res = await getInspectionList({
         size,
@@ -86,7 +88,9 @@ const Project = () => {
     } catch (e) {
       console.log(e);
     }
-  }; // 获取类目列表
+  };
+
+  // 获取类目列表
 
   const getProjectClassify = useCallback(
     async (v) => {
@@ -97,18 +101,22 @@ const Project = () => {
           labId: v,
         }); // console.log(res)
 
-        const id = res.data.data ? res.data.data[0].id : null;
-        setCurrentCategoryId(id);
-        getList({
-          labId: v,
-          categoryId: id,
-          size: params.current.size,
-          page: params.current.page,
-        });
         setCategoryList(res.data.data || []);
+        if (res.data.data.length) {
+          const id = res.data.data.length ? res.data.data[0].id : null;
+          setCurrentCategoryId(id);
+          getList({
+            labId: v,
+            categoryId: id,
+            size: params.current.size,
+            page: params.current.page,
+          });
+        } else {
+          setCurrentCategoryId(null);
+          setList([]);
+        }
       } catch (err) {
         setList([]); // eslint-disable-next-line no-use-before-define
-
         // eslint-disable-next-line no-use-before-define
         setPagination((e) => {
           return {
@@ -122,7 +130,8 @@ const Project = () => {
       }
     },
     [currentLab, currentCategoryId],
-  ); // 获取实验室列表
+  );
+  // 获取实验室列表
 
   const getLab = useCallback(async () => {
     try {
@@ -131,10 +140,10 @@ const Project = () => {
         page: 1,
       }); // console.log(res)
 
+      setLab(res.data.data || []);
       const id = res.data.data ? res.data.data[0].id : null;
       setCurrentLab(id);
       getProjectClassify(id);
-      setLab(res.data.data || []);
     } catch (e) {
       console.log(e);
     }
@@ -154,14 +163,16 @@ const Project = () => {
     //   size: params.current.size,
     //   page: params.current.page
     // })
-  } // 类目变更
+  }
 
-  function handleCategoryChange(e) {
-    setCurrentCategoryId(e.target.value); // console.log(v)
+  // 类目变更
 
+  function handleCategoryChange(d) {
+    console.log(d)
+    setCurrentCategoryId(d); // console.log(v)
     getList({
       labId: currentLab,
-      categoryId: e.target.value,
+      categoryId: d,
       size: params.current.size,
       page: params.current.page,
     });
@@ -290,17 +301,21 @@ const Project = () => {
             </Radio.Group>
           </FormItem>
           <FormItem>
-            <Radio.Group
+            <Select
+              placeholder="请选择分类"
+              showSearch
               value={currentCategoryId}
               onChange={handleCategoryChange}
-              buttonStyle="solid"
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
             >
               {categoryList.map((item) => (
-                <Radio.Button value={item.id} key={item.id}>
+                <Select.Option value={item.id} key={item.id}>
                   {item.name}
-                </Radio.Button>
+                </Select.Option>
               ))}
-            </Radio.Group>
+            </Select>
           </FormItem>
           <FormItem
             style={{
@@ -309,8 +324,8 @@ const Project = () => {
           >
             <Upload
               name="file"
-              headers={{ Authorization: getToken() }}
-              data={{ labId: currentLab, categoryId: currentCategoryId }}
+              headers={{Authorization: getToken()}}
+              data={{labId: currentLab, categoryId: currentCategoryId}}
               showUploadList={false}
               action={`${ajaxPrefix}/api/inspection-item/import`}
               beforeUpload={beforeUpload}
@@ -330,7 +345,7 @@ const Project = () => {
           marginTop: 24,
         }}
       >
-        <TableBasic toUpdate={toUpdate} data={list} pagination={pagination} />
+        <TableBasic toUpdate={toUpdate} data={list} pagination={pagination}/>
       </Card>
       {createModalVisible ? (
         <CreateForm

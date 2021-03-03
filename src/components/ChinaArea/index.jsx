@@ -72,16 +72,25 @@ const ChinaArea = (props) => {
       areaId: area
     }
     if (type === 'province') {
-      obj = {...obj, ...{provinceId: value}}
+      obj = {provinceId: value, cityId: null, areaId: null}
       setProvince(value)
       setCity(null)
       setArea(null)
-      getCitiesList(value)
+      setAreaList([])
+      if (value) {
+        getCitiesList(value)
+      }else {
+        setCityList([])
+      }
     } else if (type === 'cities') {
-      obj = {...obj, ...{cityId: value}}
+      obj = {...obj, ...{cityId: value, areaId: null}}
       setCity(value)
       setArea(null)
-      getAreaList(value)
+      if (value) {
+        getAreaList(value)
+      }else {
+        setAreaList([])
+      }
     } else if (type === 'area') {
       obj = {...obj, ...{areaId: value}}
       setArea(value)

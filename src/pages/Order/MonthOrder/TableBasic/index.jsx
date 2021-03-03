@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from './index.less';
 import {Button, Table} from 'antd';
+import style from "@/pages/UserInformation/Salesman/index.less";
+import {ajaxPrefix} from "@/utils/request";
 
 /*
 0 - 已关闭
@@ -18,13 +20,13 @@ import {Button, Table} from 'antd';
 60 - 报告已出
 * */
 const dicStatus = {
-  '0':'已关闭',
-  '10':'待付款',
-  '20':'待审核',
-  '30':'审核拒绝',
-  '40':'待出报告',
-  '50':'已取消',
-  '60':'报告已出',
+  '0': '已关闭',
+  '10': '待付款',
+  '20': '待审核',
+  '30': '审核拒绝',
+  '40': '待出报告',
+  '50': '已取消',
+  '60': '报告已出',
 }
 
 const CreateForm = (props) => {
@@ -124,14 +126,27 @@ const CreateForm = (props) => {
       valueType: 'option',
       render: (_, record) => (
         <>
-          <Button
-            type="primary"
-            onClick={() => {
-              goDetails(record)
-            }}
-          >
-            查看信息
-          </Button>
+          <div className={style.buttonGroup}>
+            <Button
+              type="primary"
+              onClick={() => {
+                goDetails(record)
+              }}
+            >
+              查看信息
+            </Button>
+            <Button
+              type="primary"
+              className={record.reportUrl ? 'button-color-green' : 'button-color-gray'}
+              onClick={() => {
+                if (record.reportUrl) {
+                  window.open(`${ajaxPrefix}/file/${record.reportUrl}`)
+                }
+              }}
+            >
+              报告导出
+            </Button>
+          </div>
         </>
       ),
     },

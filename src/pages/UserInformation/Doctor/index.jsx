@@ -9,6 +9,7 @@ import {getClinicList, getDoctorList, saveChgPassword, saveDoctor, setStatus} fr
 import {connect} from "dva";
 import {ExclamationCircleOutlined} from '@ant-design/icons';
 import style from "@/pages/UserInformation/Salesman/index.less";
+import ChinaArea from "@/components/ChinaArea";
 
 const {confirm} = Modal;
 const {Option} = Select
@@ -137,6 +138,22 @@ const TableList = () => {
               ))
             }
           </Select>
+        )
+      },
+    },
+    {
+      title: '区域',
+      dataIndex: 'updatedAt',
+      colSize: 2,
+      hideInForm: true,
+      hideInTable: true,
+      renderFormItem: () => {
+        function handleChange(data) {
+          queryParams.current = {...queryParams.current, ...data}
+        }
+
+        return (
+          <ChinaArea onChange={handleChange}/>
         )
       },
     },

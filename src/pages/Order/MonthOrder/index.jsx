@@ -210,15 +210,6 @@ const Order = () => {
                   </FormItem>
                 </Col>
                 <Col {...colLayout}>
-                  <FormItem name="age" label="报告状态">
-                    <Select placeholder="报告状态">
-                      <Option value="">全部</Option>
-                      <Option value="60">报告已出</Option>
-                      <Option value="40">报告未出</Option>
-                    </Select>
-                  </FormItem>
-                </Col>
-                <Col {...colLayout}>
                   <FormItem name="tradeIds" label="订单搜索">
                     <Input placeholder="订单编号" />
                   </FormItem>

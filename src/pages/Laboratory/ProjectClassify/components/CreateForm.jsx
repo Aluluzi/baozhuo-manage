@@ -33,7 +33,7 @@ const CreateForm = (props) => {
 
   useEffect(() => {
     getList();
-  }, [getList]);
+  }, []);
 
   function handleOk() {
     setLoading(true)

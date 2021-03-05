@@ -44,6 +44,11 @@ const CreateForm = (props) => {
       dataIndex: 'labName',
     },
     {
+      title: '订单时间',
+      align: 'center',
+      dataIndex: 'created',
+    },
+    {
       title: '订单状态',
       align: 'center',
       dataIndex: 'status',

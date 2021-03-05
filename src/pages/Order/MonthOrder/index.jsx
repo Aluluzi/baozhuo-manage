@@ -54,7 +54,7 @@ const Order = () => {
   // 获取列表
   const getList = useCallback(async () => {
     // console.log(params.current)
-    const data = { ...params.current, ...form.getFieldsValue(true), ...{ settleMethod: '1' } };
+    const data = { ...params.current, ...form.getFieldsValue(true), ...{ settleMethod: '2' } };
     // eslint-disable-next-line prefer-const
     let { time, ...obj } = data;
     console.log(data);

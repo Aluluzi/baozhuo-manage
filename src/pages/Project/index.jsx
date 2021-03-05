@@ -62,10 +62,11 @@ const Project = () => {
     try {
       const res = await getInspectionItem({id: data.id})
       console.log(res)
-      const {Items, ...obj} = res.data;
+      const {Items, price, ...obj} = res.data;
       setStepFormValues({
         ...obj,
         ...{
+          price: price / 100,
           items: Items,
         },
       });

@@ -211,13 +211,13 @@ const TableList = () => {
     {
       title: '类型',
       align: 'center',
-      dataIndex: 'clinic',
+      dataIndex: 'roleType',
       hideInSearch: true,
       hideInForm: true,
       render: (_, record) => (
         <>
           {
-            `${record.clinic.settleMethod === 1 ? '日结' : '月结'}`
+            `${record.roleType === 3 ? '诊所' : '医生'}`
           }
         </>
       ),

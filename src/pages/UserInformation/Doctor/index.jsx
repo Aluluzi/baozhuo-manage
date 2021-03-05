@@ -80,7 +80,7 @@ const TableList = () => {
   const [stepFormValues, setStepFormValues] = useState({});
   const [updataModalVisible, setUpdataModalVisible] = useState(false);
   const [currentLab, setCurrentLab] = useState(null)
-  const [name, setName] = useState(null)
+  // const [name, setName] = useState(null)
   const [phone, setPhone] = useState(null)
   const [labList, setLab] = useState([])
   const actionRef = useRef();
@@ -169,13 +169,13 @@ const TableList = () => {
       renderFormItem: () => {
         function handleChange(data) {
           queryParams.current = {...queryParams.current, ...{name: data}}
-          setName(data)
+          // setName(data)
           // actionRef.current.reloadAndRest()
           // console.log(queryParams.current)
         }
 
         return (
-          <Input value={name} placeholder="请输入医生姓名"
+          <Input placeholder="请输入医生姓名"
                  onChange={(v) => handleChange(v.target.value)}/>
         )
       },

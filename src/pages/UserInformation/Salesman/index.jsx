@@ -96,8 +96,8 @@ const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updataModalVisible, setUpdataModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
-  const [name, setName] = useState(null)
-  const [phone, setPhone] = useState(null)
+  // const [name, setName] = useState(null)
+  // const [phone, setPhone] = useState(null)
   const actionRef = useRef();
   const queryParams = useRef({
     name: null,
@@ -132,15 +132,15 @@ const TableList = () => {
       hideInTable: true,
       hideInForm: true,
       renderFormItem: () => {
-        function handleChange(v) {
-          queryParams.current = {...queryParams.current, ...{name: v.target.value}}
-          setName(v.target.value)
+        function handleChange(e) {
+          queryParams.current = {...queryParams.current, ...{name: e.target.value}}
+          // setName(e.target.value)
           // actionRef.current.reloadAndRest()
           // console.log(queryParams.current)
         }
 
         return (
-          <Input value={name} placeholder="请输入医生姓名"
+          <Input placeholder="请输入医生姓名"
                  onChange={handleChange}/>
         )
       },
@@ -154,13 +154,13 @@ const TableList = () => {
       renderFormItem: () => {
         function handleChange(data) {
           queryParams.current = {...queryParams.current, ...{phone: data}}
-          setPhone(data)
+          // setPhone(data)
           // actionRef.current.reloadAndRest()
           // console.log(queryParams.current)
         }
 
         return (
-          <Input value={phone} placeholder="请输入手机号码"
+          <Input placeholder="请输入手机号码"
                  onChange={(v) => handleChange(v.target.value)}/>
         )
       },

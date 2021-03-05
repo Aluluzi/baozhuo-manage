@@ -96,9 +96,6 @@ const CreateForm = (props) => {
             <Form.List name="clinicIds">
               {(fields, {add, remove}) => (
                 <>
-                  {
-                    console.log(fields)
-                  }
                   {fields.map((field, index) => (
                     <Space key={field.key}
                            style={{display: 'flex', justifyContent: 'center', marginBottom: 8, paddingLeft: 0}}

@@ -95,6 +95,13 @@ const CreateForm = (props) => {
       title: '收费标准',
       dataIndex: 'price',
       align: 'center',
+      render: (_, record) => (
+        <>
+          {
+            record.price / 100
+          }
+        </>
+      ),
     },
     {
       title: '临床应用',
@@ -118,7 +125,7 @@ const CreateForm = (props) => {
     },
     {
       title: '操作',
-      width:180,
+      width: 180,
       dataIndex: 'option',
       align: 'center',
       valueType: 'option',

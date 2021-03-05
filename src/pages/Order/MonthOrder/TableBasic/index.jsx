@@ -86,11 +86,25 @@ const CreateForm = (props) => {
       title: '订单金额',
       align: 'center',
       dataIndex: 'totalAmount',
+      render: (_, record) => (
+        <>
+          {
+            record.totalAmount / 100
+          }
+        </>
+      ),
     },
     {
       title: '实际支付',
       dataIndex: 'payAmount',
       align: 'center',
+      render: (_, record) => (
+        <>
+          {
+            record.payAmount / 100
+          }
+        </>
+      ),
     },
     {
       title: '区域',

@@ -98,7 +98,7 @@ const CreateForm = (props) => {
       form={form}
       width={560}
       destroyOnClose
-      title="新增实验室"
+      title={formValues.id ? '编辑项目' : '新增项目'}
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={[

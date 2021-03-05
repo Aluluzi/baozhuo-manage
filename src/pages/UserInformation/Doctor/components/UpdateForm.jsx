@@ -18,7 +18,7 @@ const CreateForm = (props) => {
     setLoading(true)
     form.validateFields().then(values => {
       // console.log(values)
-      onSubmit({...values, ...{id: formValues.id, type: formValues.type}})
+      onSubmit({...values, ...{id: formValues.id}})
       setLoading(false)
     }).catch(err => {
       console.log(err)
@@ -29,7 +29,7 @@ const CreateForm = (props) => {
     <Modal
       width={560}
       destroyOnClose
-      title="绑定其他诊所"
+      title="修改密码"
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={[

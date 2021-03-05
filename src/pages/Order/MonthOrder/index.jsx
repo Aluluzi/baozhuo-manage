@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Form, Card, Radio, Row, Col, Input, DatePicker, Select } from 'antd';
+import { Button, Form, Card, Radio, Row, Col, Input, DatePicker } from 'antd';
 import styles from './index.less';
 import TableBasic from './TableBasic';
 import { exportTrade, getOrderList } from '@/services/order';
@@ -10,7 +10,7 @@ import moment from 'moment';
 import useEventListener from '@use-it/event-listener';
 import { ajaxPrefix } from '@/utils/request';
 
-const { Option } = Select;
+
 const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 const RadioButton = Radio.Button;
@@ -171,7 +171,11 @@ const Order = () => {
                 <RadioGroup
                   defaultValue={status}
                   value={status}
-                  onChange={(e) => setStatus(e.target.value)}
+                  onChange={(e) => {
+                    setStatus(e.target.value)
+                    setTimeout(() => getList(), 0)
+                  }
+                  }
                   buttonStyle="solid"
                 >
                   <RadioButton value="">全部订单</RadioButton>

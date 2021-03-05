@@ -1,22 +1,21 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Form, Card, Radio, Row, Col, Input, DatePicker, Select } from 'antd';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Button, Form, Card, Radio, Row, Col, Input, DatePicker} from 'antd';
 import styles from './index.less';
 import TableBasic from './TableBasic';
-import { getOrderList, exportTrade } from '@/services/order';
-import { PageContainer } from '@ant-design/pro-layout';
+import {getOrderList, exportTrade} from '@/services/order';
+import {PageContainer} from '@ant-design/pro-layout';
 import StandardFormRow from '@/components/StandardFormRow';
-import { history } from 'umi';
+import {history} from 'umi';
 import useEventListener from '@use-it/event-listener';
-import { ajaxPrefix } from '@/utils/request';
+import {ajaxPrefix} from '@/utils/request';
 
-const { Option } = Select;
-const { RangePicker } = DatePicker;
+const {RangePicker} = DatePicker;
 const FormItem = Form.Item;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 
 const formItemLayout = {
-  labelCol: { span: 12 },
+  labelCol: {span: 12},
   wrapperCol: {
     xs: {
       span: 24,
@@ -53,9 +52,9 @@ const Order = () => {
   // 获取列表
   const getList = useCallback(async () => {
     // console.log(params.current)
-    const data = { ...params.current, ...form.getFieldsValue(true), ...{ settleMethod: '2' } };
+    const data = {...params.current, ...form.getFieldsValue(true), ...{settleMethod: '2'}};
     // eslint-disable-next-line prefer-const
-    let { time, ...obj } = data;
+    let {time, ...obj} = data;
     // console.log(data)
     if (time) {
       obj = {
@@ -72,7 +71,7 @@ const Order = () => {
       setList(res.data.data || []);
       // eslint-disable-next-line no-use-before-define
       setPagination((e) => {
-        return { ...e, ...{ total: res.data.total } };
+        return {...e, ...{total: res.data.total}};
       });
     } catch (e) {
       console.log(e);
@@ -105,7 +104,7 @@ const Order = () => {
     onChange: (page, pageSize) => {
       // console.log(page, pageSize)
       setPagination((e) => {
-        return { ...e, ...{ current: e.pageSize !== pageSize ? 1 : page, pageSize } };
+        return {...e, ...{current: e.pageSize !== pageSize ? 1 : page, pageSize}};
       });
       setTimeout(() => {
         getList();
@@ -129,14 +128,14 @@ const Order = () => {
         page: 1,
         tradeIds,
       });
-      console.log(res);
+      // console.log(res);
       window.open(`${ajaxPrefix}/file/${res.data}`);
     } catch (e) {
       console.log(e);
     }
   }
 
-  useEventListener('keydown', ({ keyCode }) => {
+  useEventListener('keydown', ({keyCode}) => {
     if (keyCode === 13) {
       getList();
     }
@@ -170,7 +169,11 @@ const Order = () => {
                 <RadioGroup
                   defaultValue={status}
                   value={status}
-                  onChange={(e) => setStatus(e.target.value)}
+                  onChange={(e) => {
+                    setStatus(e.target.value)
+                    setTimeout(() => getList(), 0)
+                  }
+                  }
                   buttonStyle="solid"
                 >
                   <RadioButton value="">全部订单</RadioButton>
@@ -180,8 +183,8 @@ const Order = () => {
                   <RadioButton value="60">报告已出</RadioButton>
                   <RadioButton value="50">已取消</RadioButton>
                 </RadioGroup>
-                <div style={{ display: 'inline-block', float: 'right' }}>
-                  <Button type="primary" style={{ marginRight: 16 }} onClick={handleOk}>
+                <div style={{display: 'inline-block', float: 'right'}}>
+                  <Button type="primary" style={{marginRight: 16}} onClick={handleOk}>
                     查询
                   </Button>
                   <Button
@@ -195,32 +198,32 @@ const Order = () => {
               </FormItem>
             </FormItem>
           </StandardFormRow>
-          <StandardFormRow style={{ paddingBottom: 0 }} grid last>
+          <StandardFormRow style={{paddingBottom: 0}} grid last>
             <FormItem noStyle>
               <Row gutter={16}>
                 <Col {...colLayout}>
                   <FormItem name="clinicKey" label="诊所搜索">
-                    <Input placeholder="编号/名称/医生姓名/手机号" />
+                    <Input placeholder="编号/名称/医生姓名/手机号"/>
                   </FormItem>
                 </Col>
                 <Col {...colLayout}>
                   <FormItem name="salesmanKey" label="业务员">
-                    <Input placeholder="业务员姓名/手机号" />
+                    <Input placeholder="业务员姓名/手机号"/>
                   </FormItem>
                 </Col>
                 <Col {...colLayout}>
                   <FormItem name="tradeIds" label="订单搜索">
-                    <Input placeholder="订单编号" />
+                    <Input placeholder="订单编号"/>
                   </FormItem>
                 </Col>
-                <Col {...colLayout} style={{ paddingLeft: 20 }}>
+                <Col {...colLayout} style={{paddingLeft: 20}}>
                   <FormItem name="patientKey" label="患者">
-                    <Input placeholder="患者姓名/手机号" />
+                    <Input placeholder="患者姓名/手机号"/>
                   </FormItem>
                 </Col>
-                <Col {...colLayout} style={{ paddingLeft: 21 }}>
+                <Col {...colLayout} style={{paddingLeft: 21}}>
                   <FormItem name="labName" label="实验室">
-                    <Input placeholder="实验室" />
+                    <Input placeholder="实验室"/>
                   </FormItem>
                 </Col>
                 <Col {...colLayout}>
@@ -237,7 +240,7 @@ const Order = () => {
           </StandardFormRow>
         </Form>
       </Card>
-      <Card style={{ marginTop: 24 }}>
+      <Card style={{marginTop: 24}}>
         <TableBasic
           goDetails={(v) =>
             history.push({

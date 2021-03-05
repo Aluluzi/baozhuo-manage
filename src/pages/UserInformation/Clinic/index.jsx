@@ -1,13 +1,15 @@
 import {PlusOutlined} from '@ant-design/icons';
-import {Button, message, Modal, Select} from 'antd';
+import {Button, message, Modal, Select, Input} from 'antd';
 import React, {useState, useRef} from 'react';
 import {PageContainer} from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import ChinaArea from '@/components/ChinaArea'
-import {getClinicList, saveClinic, setStatusClinic} from '@/services/userInformation';
+import {getClinicList, setSettleClinic, saveClinic, setStatusClinic, saveBindClinic} from '@/services/userInformation';
 import {connect} from "dva";
 import {ExclamationCircleOutlined} from '@ant-design/icons';
+import style from "@/pages/UserInformation/Salesman/index.less";
+import UpdateForm from "./components/UpdateForm";
 
 const {confirm} = Modal;
 const {Option} = Select
@@ -55,10 +57,50 @@ const handleUpdate = async (data, actionRef) => {
   }
 };
 
+/**
+ * 修改结算方式
+ * @param data
+ */
+const doChgPassword = async (data) => {
+  const hide = message.loading('正在修改');
+  try {
+    await setSettleClinic(data);
+    hide();
+    message.success('修改成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('修改失败请重试！');
+    return false;
+  }
+};
+
+/**
+ * 编辑
+ * @param data
+ */
+const doBindClinic = async (data) => {
+  const hide = message.loading('正在编辑');
+
+  try {
+    await saveClinic(data);
+    hide();
+    message.success('编辑成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('编辑失败请重试！');
+    return false;
+  }
+};
+
+
 const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
+  const [updataModalVisible, setUpdataModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
   const [settleMethod, setSettleMethod] = useState(null);
+  const [clinicName, setClinicName] = useState(null);
   const actionRef = useRef();
   const queryParams = useRef({
     settleMethod: null,
@@ -66,7 +108,8 @@ const TableList = () => {
     page: null,
     provinceId: null,
     cityId: null,
-    areaId: null
+    areaId: null,
+    name: null,
   });
   const columns = [
     {
@@ -106,6 +149,26 @@ const TableList = () => {
 
         return (
           <ChinaArea onChange={handleChange}/>
+        )
+      },
+    },
+    {
+      title: '诊所名字',
+      align: 'center',
+      dataIndex: 'name',
+      hideInTable: true,
+      hideInForm: true,
+      renderFormItem: () => {
+        function handleChange(data) {
+          queryParams.current = {...queryParams.current, ...{name: data}}
+          setClinicName(data)
+          // actionRef.current.reloadAndRest()
+          // console.log(queryParams.current)
+        }
+
+        return (
+          <Input value={clinicName} placeholder="请输入诊所名字"
+                 onChange={(v) => handleChange(v.target.value)}/>
         )
       },
     },
@@ -158,7 +221,39 @@ const TableList = () => {
       align: 'center',
       valueType: 'option',
       render: (_, record) => (
-        <>
+        <div className={style.buttonGroup}>
+          <Button
+            type="primary"
+            className='button-color-green'
+            onClick={() => {
+              setUpdataModalVisible(true)
+              setStepFormValues({id: record.id, type: 'password'})
+            }}
+          >
+            修改结算方式
+          </Button>
+          <Button
+            type="primary"
+            className='button-color-purple'
+            onClick={() => {
+              setUpdataModalVisible(true)
+              setStepFormValues({
+                id: record.id,
+                settleMethod: record.settleMethod,
+                contactPhone: record.contactPhone,
+                area: {
+                  provinceId: record.provinceId,
+                  cityId: record.cityId,
+                  areaId: record.areaId
+                },
+                name: record.name,
+                discount: record.discount,
+                type: 'editor'
+              })
+            }}
+          >
+            编辑
+          </Button>
           <Button
             type="primary"
             className={record.status === 0 ? '' : 'button-color-dust'}
@@ -179,7 +274,7 @@ const TableList = () => {
           >
             {record.status === 0 ? '启用' : '停用'}
           </Button>
-        </>
+        </div>
       ),
     },
   ];
@@ -223,15 +318,15 @@ const TableList = () => {
               size: params.pageSize,
             }
           }
-          // form.lastId =0 || params.current
+// form.lastId =0 || params.current
           const res = await getClinicList(form)
 
           return {
             data: res.data.data,
-            // success 请返回 true，
-            // 不然 table 会停止解析数据，即使有数据
+// success 请返回 true，
+// 不然 table 会停止解析数据，即使有数据
             success: true,
-            // 不传会使用 data 的长度，如果是分页一定要传
+// 不传会使用 data 的长度，如果是分页一定要传
             total: res.data.total,
           };
         }}
@@ -257,6 +352,27 @@ const TableList = () => {
           }}
           modalVisible={createModalVisible}
           values={stepFormValues}
+        />
+      ) : null}
+      {updataModalVisible ? (
+        <UpdateForm
+          onSubmit={async ({type, ...value}) => {
+            const success = type === 'password' ? await doChgPassword(value) : await doBindClinic(value)
+
+            if (success) {
+              setUpdataModalVisible(false);
+              setStepFormValues({});
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+          onCancel={() => {
+            setUpdataModalVisible(false);
+            setStepFormValues({});
+          }}
+          modalVisible={updataModalVisible}
+          formValues={stepFormValues}
         />
       ) : null}
     </PageContainer>

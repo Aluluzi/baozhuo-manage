@@ -123,6 +123,7 @@ const CreateForm = (props) => {
       title: '操作',
       dataIndex: 'option',
       align: 'center',
+      width:240,
       valueType: 'option',
       render: (_, record) => (
         <>
@@ -135,17 +136,22 @@ const CreateForm = (props) => {
             >
               查看信息
             </Button>
-            <Button
-              type="primary"
-              className={record.reportUrl ? 'button-color-green' : 'button-color-gray'}
-              onClick={() => {
-                if (record.reportUrl) {
-                  window.open(`${ajaxPrefix}/file/${record.reportUrl}`)
-                }
-              }}
-            >
-              报告导出
-            </Button>
+            {
+              record.reportUrl ?
+                <Button
+                  type="primary"
+                  className={record.reportUrl ? 'button-color-green' : 'button-color-gray'}
+                  onClick={() => {
+                    if (record.reportUrl) {
+                      window.open(`${ajaxPrefix}/file/${record.reportUrl}`)
+                    }
+                  }}
+                >
+                  报告导出
+                </Button>
+                :
+                null
+            }
           </div>
         </>
       ),

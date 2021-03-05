@@ -1,244 +1,124 @@
-import React, { useState } from 'react';
-import { Form, Button, DatePicker, Input, Modal, Radio, Select, Steps } from 'antd';
+import React, {useRef, useState} from 'react';
+import {Modal, Button, Form, Select, Input} from 'antd';
+import ChinaArea from "@/components/ChinaArea";
 
-const FormItem = Form.Item;
-const { Step } = Steps;
-const { TextArea } = Input;
-const { Option } = Select;
-const RadioGroup = Radio.Group;
-const formLayout = {
-  labelCol: {
-    span: 7,
-  },
-  wrapperCol: {
-    span: 13,
-  },
+const layout = {
+  labelCol: {span: 6},
+  wrapperCol: {span: 18},
 };
+const {Option} = Select
 
-const UpdateForm = (props) => {
-  const [formVals, setFormVals] = useState({
-    name: props.values.name,
-    desc: props.values.desc,
-    key: props.values.key,
-    target: '0',
-    template: '0',
-    type: '1',
-    time: '',
-    frequency: 'month',
-  });
-  const [currentStep, setCurrentStep] = useState(0);
+const CreateForm = (props) => {
   const [form] = Form.useForm();
-  const {
-    onSubmit: handleUpdate,
-    onCancel: handleUpdateModalVisible,
-    updateModalVisible,
-    values,
-  } = props;
+  const {modalVisible, onCancel, onSubmit, formValues} = props;
+  const [loading, setLoading] = useState(false)
+  const formData = useRef({})
 
-  const forward = () => setCurrentStep(currentStep + 1);
+  function handleOk() {
+    setLoading(true)
+    form.validateFields().then(values => {
+      // console.log(values)
+      if (formValues.type === 'password') {
+        onSubmit({...values, ...{id: formValues.id}})
+      } else {
+        const {area, discount, ...obj} = values
+        onSubmit({
+          ...area, ...obj, ...{discount: Number(discount), id: formValues.id},
+          contactPhone: formValues.contactPhone
+        })
+      }
+      setLoading(false)
+    }).catch(err => {
+      console.log(err)
+    })
+  }
 
-  const backward = () => setCurrentStep(currentStep - 1);
-
-  const handleNext = async () => {
-    const fieldsValue = await form.validateFields();
-    setFormVals({ ...formVals, ...fieldsValue });
-
-    if (currentStep < 2) {
-      forward();
-    } else {
-      handleUpdate({ ...formVals, ...fieldsValue });
+  const checkPrice = (_, value) => {
+    if (value.provinceId && value.cityId && value.areaId) {
+      return Promise.resolve();
     }
-  };
+    return Promise.reject(new Error('请完善区域'));
 
-  const renderContent = () => {
-    if (currentStep === 1) {
-      return (
-        <>
-          <FormItem name="target" label="监控对象">
-            <Select
-              style={{
-                width: '100%',
-              }}
-            >
-              <Option value="0">表一</Option>
-              <Option value="1">表二</Option>
-            </Select>
-          </FormItem>
-          <FormItem name="template" label="规则模板">
-            <Select
-              style={{
-                width: '100%',
-              }}
-            >
-              <Option value="0">规则模板一</Option>
-              <Option value="1">规则模板二</Option>
-            </Select>
-          </FormItem>
-          <FormItem name="type" label="规则类型">
-            <RadioGroup>
-              <Radio value="0">强</Radio>
-              <Radio value="1">弱</Radio>
-            </RadioGroup>
-          </FormItem>
-        </>
-      );
-    }
-
-    if (currentStep === 2) {
-      return (
-        <>
-          <FormItem
-            name="time"
-            label="开始时间"
-            rules={[
-              {
-                required: true,
-                message: '请选择开始时间！',
-              },
-            ]}
-          >
-            <DatePicker
-              style={{
-                width: '100%',
-              }}
-              showTime
-              format="YYYY-MM-DD HH:mm:ss"
-              placeholder="选择开始时间"
-            />
-          </FormItem>
-          <FormItem name="frequency" label="调度周期">
-            <Select
-              style={{
-                width: '100%',
-              }}
-            >
-              <Option value="month">月</Option>
-              <Option value="week">周</Option>
-            </Select>
-          </FormItem>
-        </>
-      );
-    }
-
-    return (
-      <>
-        <FormItem
-          name="name"
-          label="规则名称"
-          rules={[
-            {
-              required: true,
-              message: '请输入规则名称！',
-            },
-          ]}
-        >
-          <Input placeholder="请输入" />
-        </FormItem>
-        <FormItem
-          name="desc"
-          label="规则描述"
-          rules={[
-            {
-              required: true,
-              message: '请输入至少五个字符的规则描述！',
-              min: 5,
-            },
-          ]}
-        >
-          <TextArea rows={4} placeholder="请输入至少五个字符" />
-        </FormItem>
-      </>
-    );
-  };
-
-  const renderFooter = () => {
-    if (currentStep === 1) {
-      return (
-        <>
-          <Button
-            style={{
-              float: 'left',
-            }}
-            onClick={backward}
-          >
-            上一步
-          </Button>
-          <Button onClick={() => handleUpdateModalVisible(false, values)}>取消</Button>
-          <Button type="primary" onClick={() => handleNext()}>
-            下一步
-          </Button>
-        </>
-      );
-    }
-
-    if (currentStep === 2) {
-      return (
-        <>
-          <Button
-            style={{
-              float: 'left',
-            }}
-            onClick={backward}
-          >
-            上一步
-          </Button>
-          <Button onClick={() => handleUpdateModalVisible(false, values)}>取消</Button>
-          <Button type="primary" onClick={() => handleNext()}>
-            完成
-          </Button>
-        </>
-      );
-    }
-
-    return (
-      <>
-        <Button onClick={() => handleUpdateModalVisible(false, values)}>取消</Button>
-        <Button type="primary" onClick={() => handleNext()}>
-          下一步
-        </Button>
-      </>
-    );
   };
 
   return (
     <Modal
-      width={640}
-      bodyStyle={{
-        padding: '32px 40px 48px',
-      }}
+      width={560}
       destroyOnClose
-      title="规则配置"
-      visible={updateModalVisible}
-      footer={renderFooter()}
-      onCancel={() => handleUpdateModalVisible()}
+      title="修改结算方式"
+      visible={modalVisible}
+      onCancel={() => onCancel()}
+      footer={[
+        <Button key="back" onClick={() => onCancel()}>
+          取消
+        </Button>,
+        <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
+          确定
+        </Button>,
+      ]}
     >
-      <Steps
-        style={{
-          marginBottom: 28,
-        }}
-        size="small"
-        current={currentStep}
-      >
-        <Step title="基本信息" />
-        <Step title="配置规则属性" />
-        <Step title="设定调度周期" />
-      </Steps>
       <Form
-        {...formLayout}
+        {...layout}
+        name="userInformationSalesman"
         form={form}
-        initialValues={{
-          target: formVals.target,
-          template: formVals.template,
-          type: formVals.type,
-          frequency: formVals.frequency,
-          name: formVals.name,
-          desc: formVals.desc,
-        }}
+        initialValues={formValues.id && formValues.type !== 'password' ? formValues : formData.current}
       >
-        {renderContent()}
+        {
+          formValues.type === 'password' ?
+            <Form.Item
+              label="类型"
+              name="settleMethod"
+              rules={[{required: true, message: '请选择类型'}]}
+            >
+              <Select
+                placeholder='请选择类型'
+              >
+                <Option value={1}>日结</Option>
+                <Option value={2}>月结</Option>
+              </Select>
+            </Form.Item>
+            :
+            <>
+              <Form.Item
+                label="区域"
+                name="area"
+                required
+                rules={[{validator: checkPrice}]}
+              >
+                <ChinaArea/>
+              </Form.Item>
+
+              <Form.Item
+                label="类型"
+                name="settleMethod"
+                rules={[{required: true, message: '请输入实验室名称'}]}
+              >
+                <Select
+                  placeholder='请选择类型'
+                >
+                  <Option value={1}>日结</Option>
+                  <Option value={2}>月结</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                label="诊所名称"
+                name="name"
+                rules={[{required: true, message: '请输入诊所名称'}]}
+              >
+                <Input placeholder="请输入诊所名称"/>
+              </Form.Item>
+              <Form.Item
+                label="折扣"
+                name="discount"
+                rules={[{required: true, message: '请输入折扣，5折即输入50即可'}]}
+              >
+                <Input placeholder="请输入折扣，5折即输入50即可"/>
+              </Form.Item>
+            </>
+        }
       </Form>
     </Modal>
   );
 };
 
-export default UpdateForm;
+export default CreateForm;

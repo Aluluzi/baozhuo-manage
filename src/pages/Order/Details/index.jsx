@@ -54,11 +54,18 @@ function Details() {
         <Row>
           <Col sm={8} xs={24}>
               <span>
-                当前订单状态：报告已出
+                当前订单状态：{dicStatus[list.status]}
               </span>
-            <Button type="primary" className={styles.but1}>查看</Button>
-            <Button type="primary" className="button-color-green"
-                    onClick={() => expectFile(list.reportUrl)}>导出报告</Button>
+            <Button type="primary"
+                    className={[styles.but1, list.status !== 60 ? 'button-color-green' : 'button-color-gray']}
+                    onClick={() => expectFile(list.reportUrl)}>修改条码</Button>
+            {
+              list.reportUrl ?
+                <Button type="primary" className="button-color-green"
+                        onClick={() => expectFile(list.reportUrl)}>导出报告</Button>
+                :
+                null
+            }
           </Col>
         </Row>
       </Card>
@@ -91,7 +98,7 @@ function Details() {
           <Descriptions.Item label="耗材">
             {
               list.tubes ? list.tubes.map(item => {
-                return item.tubeName
+                return `${item.tubeName}/${item.tubeNum}/${item.barCode}`
               }).toString() : ''
             }
           </Descriptions.Item>

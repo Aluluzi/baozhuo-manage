@@ -2,7 +2,13 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Button, Form, Card, message, Radio, Upload, Select} from 'antd'; // import TagSelect from '@/components/TagSelect';
 import styles from './index.less';
 import TableBasic from './TableBasic';
-import {saveInspection, getInspectionList, exportInspection} from '@/services/project';
+import {
+  saveInspection,
+  getInspectionList,
+  exportInspection,
+  getInspectionItem,
+  delInspectionItem
+} from '@/services/project';
 import {PageContainer} from '@ant-design/pro-layout';
 import {getCategoryList, getLabList} from '@/services/laboratory';
 import CreateForm from './components/CreateForm';
@@ -46,21 +52,27 @@ const Project = () => {
     }
   };
 
+
   /**
    * 编辑
    * @param data
    */
 
-  function toUpdate(data) {
-    // console.log(data)
-    const {Items, ...obj} = data;
-    setStepFormValues({
-      ...obj,
-      ...{
-        items: Items,
-      },
-    });
-    handleModalVisible(true);
+  async function toUpdate(data) {
+    try {
+      const res = await getInspectionItem({id: data.id})
+      console.log(res)
+      const {Items, ...obj} = res.data;
+      setStepFormValues({
+        ...obj,
+        ...{
+          items: Items,
+        },
+      });
+      handleModalVisible(true);
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   // 获取列表
@@ -89,6 +101,26 @@ const Project = () => {
       console.log(e);
     }
   };
+
+  /**
+   * 删除
+   * @param data
+   */
+
+  async function handleDel(data) {
+    try {
+      const res = await delInspectionItem({id: data.id})
+      message.success(res.message);
+      getList({
+        labId: params.current.currentLab,
+        categoryId: params.current.currentCategoryId,
+        size: params.current.size,
+        page: params.current.page,
+      });
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   // 获取类目列表
 
@@ -345,7 +377,7 @@ const Project = () => {
           marginTop: 24,
         }}
       >
-        <TableBasic toUpdate={toUpdate} data={list} pagination={pagination}/>
+        <TableBasic toUpdate={toUpdate} handleDel={handleDel} data={list} pagination={pagination}/>
       </Card>
       {createModalVisible ? (
         <CreateForm

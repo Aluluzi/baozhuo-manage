@@ -45,7 +45,9 @@ const CreateForm = (props) => {
   ), 800)
 
   useEffect(() => {
-    setIsCombo(formValues.isCombo)
+    if(formValues.id){
+      setIsCombo(formValues.isCombo)
+    }
     getList();
   }, []);
 
@@ -110,14 +112,19 @@ const CreateForm = (props) => {
         </Button>,
       ]}
     >
-      <Row justify='center' style={{marginBottom: 24}}>
-        <Radio.Group value={isCombo} onChange={e => {
-          setIsCombo(e.target.value)
-        }} buttonStyle="solid">
-          <Radio.Button value={true}>套餐项目</Radio.Button>
-          <Radio.Button value={false}>单个项目</Radio.Button>
-        </Radio.Group>
-      </Row>
+      {
+        formValues.id ?
+          null
+          :
+          <Row justify='center' style={{marginBottom: 24}}>
+            <Radio.Group value={isCombo} onChange={e => {
+              setIsCombo(e.target.value)
+            }} buttonStyle="solid">
+              <Radio.Button value={true}>套餐项目</Radio.Button>
+              <Radio.Button value={false}>单个项目</Radio.Button>
+            </Radio.Group>
+          </Row>
+      }
       <Form
         {...layout}
         name="project"

@@ -45,14 +45,14 @@ const Order = () => {
   const queryParameter = useRef({
     labId: null,
     salesmanKey: '',
-    tradeIds: null,
+    tradeId: null,
     clinicKey: '',
   });
 
   // 获取列表
   const getList = useCallback(async () => {
-    // console.log(params.current)
-    const data = {...params.current, ...form.getFieldsValue(true), ...{settleMethod: '1'}};
+    const {tradeId, ...d} = form.getFieldsValue(true)
+    const data = {...params.current, ...d, ...{settleMethod: '1', tradeId: tradeId ? Number(tradeId) : null}};
     // eslint-disable-next-line prefer-const
     let {time, ...obj} = data;
     // console.log(data)
@@ -212,7 +212,7 @@ const Order = () => {
                   </FormItem>
                 </Col>
                 <Col {...colLayout}>
-                  <FormItem name="tradeIds" label="订单搜索">
+                  <FormItem name="tradeId" label="订单搜索">
                     <Input placeholder="订单编号"/>
                   </FormItem>
                 </Col>

@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {Modal, Button, Form, Input, Space} from 'antd';
+import {Modal, Button, Form, Input} from 'antd';
 
 const layout = {
   labelCol: {span: 6},
   wrapperCol: {span: 18},
 };
 const layoutItem = {
-  labelCol: {span: 8},
+  labelCol: {span: 6},
   // wrapperCol: {span: 12},
 };
 
@@ -61,18 +61,15 @@ const CreateForm = (props) => {
           {(fields) => (
             <>
               {fields.map((field) => (
-                <Space key={field.key}
-                       style={{display: 'flex', justifyContent: 'center', marginBottom: 8, paddingLeft: 0}}
-                       align="baseline">
-                  <Form.Item
-                    {...layoutItem}
-                    label={formValues.codes[field.name].tubeName}
-                    name={[field.name, 'code']}
-                    rules={[{required: true, message: '请输入诊所编号进行绑定'}]}
-                  >
-                    <Input placeholder="请输入诊所编号进行绑定"/>
-                  </Form.Item>
-                </Space>
+                <Form.Item
+                  key={field.key}
+                  {...layoutItem}
+                  label={formValues.codes[field.name].tubeName}
+                  name={[field.name, 'code']}
+                  rules={[{required: true, message: '请输入条码'}]}
+                >
+                  <Input placeholder="请输入条码"/>
+                </Form.Item>
               ))}
             </>
           )}

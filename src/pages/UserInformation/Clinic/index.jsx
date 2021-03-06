@@ -225,16 +225,6 @@ const TableList = () => {
         <div className={style.buttonGroup}>
           <Button
             type="primary"
-            className='button-color-green'
-            onClick={() => {
-              setUpdataModalVisible(true)
-              setStepFormValues({id: record.id, type: 'password'})
-            }}
-          >
-            修改结算方式
-          </Button>
-          <Button
-            type="primary"
             className='button-color-purple'
             onClick={() => {
               setUpdataModalVisible(true)
@@ -279,6 +269,8 @@ const TableList = () => {
       ),
     },
   ];
+
+
   return (
     <PageContainer>
       <ProTable
@@ -319,15 +311,15 @@ const TableList = () => {
               size: params.pageSize,
             }
           }
-// form.lastId =0 || params.current
+          // form.lastId =0 || params.current
           const res = await getClinicList(form)
 
           return {
             data: res.data.data,
-// success 请返回 true，
-// 不然 table 会停止解析数据，即使有数据
+            // success 请返回 true，
+            // 不然 table 会停止解析数据，即使有数据
             success: true,
-// 不传会使用 data 的长度，如果是分页一定要传
+            // 不传会使用 data 的长度，如果是分页一定要传
             total: res.data.total,
           };
         }}

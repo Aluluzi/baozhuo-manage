@@ -19,11 +19,11 @@ const CreateForm = (props) => {
     form.validateFields().then(values => {
       // console.log(values)
       if (formValues.type === 'password') {
-        onSubmit({...values, ...{id: formValues.id}})
+        onSubmit({...values, ...{id: formValues.id, type: formValues.type}})
       } else {
         const {area, discount, ...obj} = values
         onSubmit({
-          ...area, ...obj, ...{discount: Number(discount), id: formValues.id},
+          ...area, ...obj, ...{discount: Number(discount), id: formValues.id, type: formValues.type},
           contactPhone: formValues.contactPhone
         })
       }
@@ -45,7 +45,7 @@ const CreateForm = (props) => {
     <Modal
       width={560}
       destroyOnClose
-      title="修改结算方式"
+      title="编辑"
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={[
@@ -85,7 +85,7 @@ const CreateForm = (props) => {
                 required
                 rules={[{validator: checkPrice}]}
               >
-                <ChinaArea/>
+                <ChinaArea disabled/>
               </Form.Item>
 
               <Form.Item

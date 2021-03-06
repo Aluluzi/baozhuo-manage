@@ -94,7 +94,7 @@ function Details() {
                 当前订单状态：{dicStatus[list.status]}
               </span>
             {
-              !list.reportUrl ?
+              list.status !== 60 ?
                 <Button type="primary"
                         className={[styles.but1, list.status !== 60 ? 'button-color-green' : 'button-color-gray']}
                         onClick={() => editor(list)}>修改条码</Button>
@@ -102,7 +102,7 @@ function Details() {
                 null
             }
             {
-              list.reportUrl ?
+              list.reports ?
                 <Button type="primary" className="button-color-green"
                         onClick={() => expectFile(list.reportUrl)}>导出报告</Button>
                 :

@@ -17,7 +17,7 @@ const {Option} = Select
  */
 const ChinaArea = (props) => {
   // console.log(props)
-  const {onChange, value} = props
+  const {onChange, value, disabled} = props
   const [province, setProvince] = useState(null);
   const [provinceList, setProvinceList] = useState([]);
   const [city, setCity] = useState(null);
@@ -113,7 +113,7 @@ const ChinaArea = (props) => {
 
   return (
     <div className={styles.container}>
-      <Select value={province} style={{width: 120}} placeholder="省" onChange={(v) => handleChange(v, 'province')}
+      <Select value={province} style={{width: 120}} placeholder="省" disabled={disabled === true} onChange={(v) => handleChange(v, 'province')}
               allowClear>
         {
           provinceList.map((item) => (
@@ -121,14 +121,14 @@ const ChinaArea = (props) => {
           ))
         }
       </Select>
-      <Select value={city} style={{width: 120}} placeholder="市" onChange={(v) => handleChange(v, 'cities')} allowClear>
+      <Select value={city} style={{width: 120}} placeholder="市" disabled={disabled === true} onChange={(v) => handleChange(v, 'cities')} allowClear>
         {
           cityList.map((item) => (
             <Option value={item.id} key={item.id}>{item.name}</Option>
           ))
         }
       </Select>
-      <Select value={area} style={{width: 120}} placeholder="区" onChange={(v) => handleChange(v, 'area')} allowClear>
+      <Select value={area} style={{width: 120}} placeholder="区" disabled={disabled === true} onChange={(v) => handleChange(v, 'area')} allowClear>
         {
           areaList.map((item) => (
             <Option value={item.id} key={item.id}>{item.name}</Option>

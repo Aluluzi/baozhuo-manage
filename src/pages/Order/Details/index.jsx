@@ -99,7 +99,7 @@ function Details() {
                 当前订单状态：{dicStatus[list.status]}
               </span>
             {
-              list.status !== 60 ?
+              list.status === 20 || list.status === 40 ?
                 <Button type="primary"
                         className={[styles.but1, list.status !== 60 ? 'button-color-green' : 'button-color-gray']}
                         onClick={() => editor(list)}>修改条码</Button>

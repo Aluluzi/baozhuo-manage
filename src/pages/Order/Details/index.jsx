@@ -1,10 +1,11 @@
-import {Button, Card, Col, Descriptions, Divider, Row} from 'antd';
+import {Button, Card, Col, Descriptions, Divider, message, Row} from 'antd';
 import React, {useCallback, useEffect, useState} from 'react';
 import {PageContainer} from '@ant-design/pro-layout';
 import styles from './style.less';
-import {getOrderDetails} from "@/services/order";
+import {getOrderDetails, setBarcode} from "@/services/order";
 import {history} from 'umi'
 import {ajaxPrefix} from "@/utils/request";
+import UpdateForm from "./components/UpdateForm";
 
 const dicSex = {
   M: '男',
@@ -20,7 +21,27 @@ const dicStatus = {
   '60': '报告已出',
 }
 
+/**
+ * 修改密码
+ * @param data
+ */
+const doChgPassword = async (data) => {
+  const hide = message.loading('正在修改');
+  try {
+    await setBarcode(data);
+    hide();
+    message.success('修改成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('修改失败请重试！');
+    return false;
+  }
+};
+
 function Details() {
+  const [stepFormValues, setStepFormValues] = useState({});
+  const [updataModalVisible, setUpdataModalVisible] = useState(false);
   const [list, setList] = useState({})
   // 获取列表
   const getList = useCallback(async (id) => {
@@ -41,6 +62,22 @@ function Details() {
     }
   }
 
+  function editor(l) {
+    setUpdataModalVisible(true)
+    setStepFormValues({
+      id: l.id, codes: l.tubes ?
+        l.tubes.map(item => {
+          return {
+            code: item.barCode,
+            tubeName: item.tubeName,
+            id: item.id
+          }
+        })
+        :
+        []
+    })
+  }
+
   useEffect(() => {
     const {id} = history.location.query
     getList(id);
@@ -54,11 +91,23 @@ function Details() {
         <Row>
           <Col sm={8} xs={24}>
               <span>
-                当前订单状态：报告已出
+                当前订单状态：{dicStatus[list.status]}
               </span>
-            <Button type="primary" className={styles.but1}>查看</Button>
-            <Button type="primary" className="button-color-green"
-                    onClick={() => expectFile(list.reportUrl)}>导出报告</Button>
+            {
+              !list.reportUrl ?
+                <Button type="primary"
+                        className={[styles.but1, list.status !== 60 ? 'button-color-green' : 'button-color-gray']}
+                        onClick={() => editor(list)}>修改条码</Button>
+                :
+                null
+            }
+            {
+              list.reportUrl ?
+                <Button type="primary" className="button-color-green"
+                        onClick={() => expectFile(list.reportUrl)}>导出报告</Button>
+                :
+                null
+            }
           </Col>
         </Row>
       </Card>
@@ -91,7 +140,7 @@ function Details() {
           <Descriptions.Item label="耗材">
             {
               list.tubes ? list.tubes.map(item => {
-                return item.tubeName
+                return `${item.tubeName}/${item.tubeNum}/${item.barCode}`
               }).toString() : ''
             }
           </Descriptions.Item>
@@ -126,6 +175,28 @@ function Details() {
           <Descriptions.Item label="实际支付（元）">{list.payAmount / 100}</Descriptions.Item>
         </Descriptions>
       </Card>
+      {updataModalVisible ? (
+        <UpdateForm
+          onSubmit={async (value) => {
+            const success = await doChgPassword(value)
+
+            if (success) {
+              setUpdataModalVisible(false);
+              setStepFormValues({});
+              if (history.location.query) {
+                const {id} = history.location.query
+                getList(id);
+              }
+            }
+          }}
+          onCancel={() => {
+            setUpdataModalVisible(false);
+            setStepFormValues({});
+          }}
+          modalVisible={updataModalVisible}
+          formValues={stepFormValues}
+        />
+      ) : null}
     </PageContainer>
   );
 }

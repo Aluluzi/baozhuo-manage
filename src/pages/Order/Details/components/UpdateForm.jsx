@@ -1,35 +1,45 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Modal, Button, Form, Input} from 'antd';
 
 const layout = {
   labelCol: {span: 6},
   wrapperCol: {span: 18},
 };
+const layoutItem = {
+  labelCol: {span: 6},
+  // wrapperCol: {span: 12},
+};
 
 const CreateForm = (props) => {
   const [form] = Form.useForm();
   const {modalVisible, onCancel, onSubmit, formValues} = props;
   const [loading, setLoading] = useState(false)
-  const formData = useRef({
-
-  })
 
   function handleOk() {
     setLoading(true)
     form.validateFields().then(values => {
-      // console.log(values)
-      onSubmit({...values, ...{id: formValues.id}})
+      const codes = values.codes.map(item => {
+        return {
+          id: item.id,
+          code: item.code
+        }
+      })
+      onSubmit({...values, ...{id: formValues.id, codes}})
       setLoading(false)
     }).catch(err => {
       console.log(err)
     })
   }
 
+  useEffect(() => {
+    // list
+  })
+
   return (
     <Modal
       width={560}
       destroyOnClose
-      title="修改密码"
+      title="修改条码"
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={[
@@ -45,15 +55,25 @@ const CreateForm = (props) => {
         {...layout}
         name="userInformationSalesman"
         form={form}
-        initialValues={formData.current}
+        initialValues={formValues}
       >
-        <Form.Item
-          label="新密码"
-          name="password"
-          rules={[{required: true, message: '请输入新密码'}]}
-        >
-          <Input placeholder="请输入新密码"/>
-        </Form.Item>
+        <Form.List name="codes">
+          {(fields) => (
+            <>
+              {fields.map((field) => (
+                <Form.Item
+                  key={field.key}
+                  {...layoutItem}
+                  label={formValues.codes[field.name].tubeName}
+                  name={[field.name, 'code']}
+                  rules={[{required: true, message: '请输入条码'}]}
+                >
+                  <Input placeholder="请输入条码"/>
+                </Form.Item>
+              ))}
+            </>
+          )}
+        </Form.List>
       </Form>
     </Modal>
   );

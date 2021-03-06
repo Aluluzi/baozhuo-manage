@@ -27,3 +27,6 @@ export async function saveCategory(data) {
 export async function setCategoryStatus(data) {
   return request('/api/category/set-status', { method: 'post', data });
 }
+export async function deleteCategory(data) {
+  return request('/api/category/delete', { method: 'post', data });
+}

@@ -4,9 +4,10 @@ import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {PageContainer} from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
-import {getCategoryList, getLabList, saveCategory, setCategoryStatus} from '@/services/laboratory';
+import {getCategoryList, getLabList, saveCategory, setCategoryStatus, deleteCategory} from '@/services/laboratory';
 import {connect} from "dva";
 import {ExclamationCircleOutlined} from '@ant-design/icons';
+import style from "@/pages/UserInformation/Salesman/index.less";
 
 const {confirm} = Modal;
 const {Option} = Select
@@ -31,7 +32,29 @@ const handleAdd = async (fields) => {
   }
 };
 /**
- * 更新节点
+ * 删除
+ * @param fields
+ */
+
+const handleDelete = async (data, actionRef) => {
+  const hide = message.loading('正在删除');
+
+  try {
+    await deleteCategory({
+      id: data.id,
+    });
+    hide();
+    message.success('删除成功');
+    actionRef.current.reload();
+    return true;
+  } catch (error) {
+    hide();
+    message.error('删除失败请重试！');
+    return false;
+  }
+};
+/**
+ * 更新状态
  * @param fields
  */
 
@@ -144,26 +167,48 @@ const TableList = () => {
       valueType: 'option',
       render: (_, record) => (
         <>
-          <Button
-            type="primary"
-            className={record.status === 0 ? '' : 'button-color-dust'}
-            onClick={() => {
-              // console.log(record)
-              confirm({
-                title: '提示',
-                icon: <ExclamationCircleOutlined/>,
-                content: record.status === 0 ? '是否启用？' : '是否停用？',
-                onOk() {
-                  handleUpdate(record, actionRef)
-                },
-                onCancel() {
-                  console.log('Cancel');
-                },
-              });
-            }}
-          >
-            {record.status === 0 ? '启用' : '停用'}
-          </Button>
+          <div className={style.buttonGroup}>
+            <Button
+              type="primary"
+              className={record.status === 0 ? '' : 'button-color-dust'}
+              onClick={() => {
+                // console.log(record)
+                confirm({
+                  title: '提示',
+                  icon: <ExclamationCircleOutlined/>,
+                  content: record.status === 0 ? '是否启用？' : '是否停用？',
+                  onOk() {
+                    handleUpdate(record, actionRef)
+                  },
+                  onCancel() {
+                    console.log('Cancel');
+                  },
+                });
+              }}
+            >
+              {record.status === 0 ? '启用' : '停用'}
+            </Button>
+            <Button
+              type="primary"
+              className='button-color-sunset'
+              onClick={() => {
+                // console.log(record)
+                confirm({
+                  title: '提示',
+                  icon: <ExclamationCircleOutlined/>,
+                  content: '是否删除？',
+                  onOk() {
+                    handleDelete(record, actionRef)
+                  },
+                  onCancel() {
+                    console.log('Cancel');
+                  },
+                });
+              }}
+            >
+              删除
+            </Button>
+          </div>
         </>
       ),
     },

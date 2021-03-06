@@ -1,5 +1,5 @@
 import {PlusOutlined} from '@ant-design/icons';
-import {Button, message, Modal} from 'antd';
+import {Button, Input, message, Modal} from 'antd';
 import React, {useState, useRef} from 'react';
 import {PageContainer} from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
@@ -96,9 +96,12 @@ const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updataModalVisible, setUpdataModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
+  // const [name, setName] = useState(null)
+  // const [phone, setPhone] = useState(null)
   const actionRef = useRef();
   const queryParams = useRef({
-    // status:1,
+    name: null,
+    phone: null,
     size: null,
     page: null,
     provinceId: null,
@@ -119,6 +122,46 @@ const TableList = () => {
 
         return (
           <ChinaArea onChange={handleChange}/>
+        )
+      },
+    },
+    {
+      title: '业务员姓名',
+      align: 'center',
+      dataIndex: 'name',
+      hideInTable: true,
+      hideInForm: true,
+      renderFormItem: () => {
+        function handleChange(e) {
+          queryParams.current = {...queryParams.current, ...{name: e.target.value}}
+          // setName(e.target.value)
+          // actionRef.current.reloadAndRest()
+          // console.log(queryParams.current)
+        }
+
+        return (
+          <Input placeholder="请输入医生姓名"
+                 onChange={handleChange}/>
+        )
+      },
+    },
+    {
+      title: '手机号码',
+      align: 'center',
+      dataIndex: 'phone',
+      hideInTable: true,
+      hideInForm: true,
+      renderFormItem: () => {
+        function handleChange(data) {
+          queryParams.current = {...queryParams.current, ...{phone: data}}
+          // setPhone(data)
+          // actionRef.current.reloadAndRest()
+          // console.log(queryParams.current)
+        }
+
+        return (
+          <Input placeholder="请输入手机号码"
+                 onChange={(v) => handleChange(v.target.value)}/>
         )
       },
     },
@@ -212,10 +255,10 @@ const TableList = () => {
             type="primary"
             onClick={() => {
               setUpdataModalVisible(true)
-              setStepFormValues({id: record.id, type: 'clinic'})
+              setStepFormValues({id: record.id, clinicIds: record.clinics, type: 'clinic'})
             }}
           >
-            绑定其他诊所
+            编辑绑定诊所
           </Button>
           <Button
             type="primary"

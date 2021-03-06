@@ -1,14 +1,15 @@
 import {PlusOutlined} from '@ant-design/icons';
-import {Button, message, Modal, Select} from 'antd';
+import {Button, Input, message, Modal, Select} from 'antd';
 import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {PageContainer} from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
-import {getClinicList, getDoctorList, saveChgPassword, saveDoctor, setStatus} from '@/services/userInformation';
+import {getClinicList, getDoctorList, saveChgPassword, saveDoctor, setDoctorStatus} from '@/services/userInformation';
 import {connect} from "dva";
 import {ExclamationCircleOutlined} from '@ant-design/icons';
 import style from "@/pages/UserInformation/Salesman/index.less";
+import ChinaArea from "@/components/ChinaArea";
 
 const {confirm} = Modal;
 const {Option} = Select
@@ -41,7 +42,7 @@ const handleUpdate = async (data, actionRef) => {
   const hide = message.loading('正在配置');
 
   try {
-    await setStatus({
+    await setDoctorStatus({
       id: data.id,
       status: data.status === 0 ? 1 : 0,
     });
@@ -79,10 +80,13 @@ const TableList = () => {
   const [stepFormValues, setStepFormValues] = useState({});
   const [updataModalVisible, setUpdataModalVisible] = useState(false);
   const [currentLab, setCurrentLab] = useState(null)
+  // const [name, setName] = useState(null)
+  const [phone, setPhone] = useState(null)
   const [labList, setLab] = useState([])
   const actionRef = useRef();
   const queryParams = useRef({
-    // status:1,
+    name: null,
+    phone: null,
     size: null,
     page: null,
     provinceId: null,
@@ -141,6 +145,62 @@ const TableList = () => {
       },
     },
     {
+      title: '区域',
+      dataIndex: 'updatedAt',
+      colSize: 2,
+      hideInForm: true,
+      hideInTable: true,
+      renderFormItem: () => {
+        function handleChange(data) {
+          queryParams.current = {...queryParams.current, ...data}
+        }
+
+        return (
+          <ChinaArea onChange={handleChange}/>
+        )
+      },
+    },
+    {
+      title: '医生姓名',
+      align: 'center',
+      dataIndex: 'name',
+      hideInTable: true,
+      hideInForm: true,
+      renderFormItem: () => {
+        function handleChange(data) {
+          queryParams.current = {...queryParams.current, ...{name: data}}
+          // setName(data)
+          // actionRef.current.reloadAndRest()
+          // console.log(queryParams.current)
+        }
+
+        return (
+          <Input placeholder="请输入医生姓名"
+                 onChange={(v) => handleChange(v.target.value)}/>
+        )
+      },
+    },
+    {
+      title: '手机号码',
+      align: 'center',
+      dataIndex: 'phone',
+      hideInTable: true,
+      hideInForm: true,
+      renderFormItem: () => {
+        function handleChange(data) {
+          queryParams.current = {...queryParams.current, ...{phone: data}}
+          setPhone(data)
+          // actionRef.current.reloadAndRest()
+          // console.log(queryParams.current)
+        }
+
+        return (
+          <Input value={phone} placeholder="请输入手机号码"
+                 onChange={(v) => handleChange(v.target.value)}/>
+        )
+      },
+    },
+    {
       title: '编号',
       width: 80,
       align: 'center',
@@ -149,23 +209,58 @@ const TableList = () => {
       hideInForm: true
     },
     {
-      title: '医生信息',
-      dataIndex: 'name',
+      title: '类型',
       align: 'center',
+      dataIndex: 'roleType',
       hideInSearch: true,
       hideInForm: true,
       render: (_, record) => (
         <>
           {
-            `${record.name}/${record.name}/${record.phone}`
+            `${record.roleType === 3 ? '诊所' : '医生'}`
           }
         </>
       ),
     },
     {
-      title: '诊所信息',
+      title: '诊所编号',
       align: 'center',
+      dataIndex: 'clinic',
+      hideInSearch: true,
+      hideInForm: true,
+      render: (_, record) => (
+        <>
+          {
+            `${record.clinic.id}`
+          }
+        </>
+      ),
+    },
+    {
+      title: '诊所名字',
+      align: 'center',
+      dataIndex: 'clinic',
+      hideInSearch: true,
+      hideInForm: true,
+      render: (_, record) => (
+        <>
+          {
+            `${record.clinic.name}`
+          }
+        </>
+      ),
+    },
+    {
+      title: '医生姓名',
       dataIndex: 'name',
+      align: 'center',
+      hideInSearch: true,
+      hideInForm: true,
+    },
+    {
+      title: '手机号码',
+      align: 'center',
+      dataIndex: 'phone',
       hideInSearch: true,
       hideInForm: true
     },
@@ -286,7 +381,7 @@ const TableList = () => {
       ) : null}
       {updataModalVisible ? (
         <UpdateForm
-          onSubmit={async ({type, ...value}) => {
+          onSubmit={async (value) => {
             const success = await doChgPassword(value)
 
             if (success) {

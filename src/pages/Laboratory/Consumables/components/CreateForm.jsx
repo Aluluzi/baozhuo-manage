@@ -1,25 +1,26 @@
-import React, {useState} from 'react';
-import {Modal, Button, Form, Input, Upload, message} from 'antd';
-import {LoadingOutlined, PlusOutlined} from '@ant-design/icons';
-import {ajaxPrefix} from '@/utils/request'
+import React, { useState } from 'react';
+import { Modal, Button, Form, Input, Upload, message } from 'antd';
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { ajaxPrefix } from '@/utils/request';
+import { getToken } from '@/services/user';
 
 const layout = {
-  labelCol: {span: 6},
-  wrapperCol: {span: 18},
+  labelCol: { span: 6 },
+  wrapperCol: { span: 18 },
 };
 
 const CreateForm = (props) => {
   const [form] = Form.useForm();
-  const {modalVisible, onCancel, onSubmit} = props;
-  const [loading, setLoading] = useState(false)
-  const [img, setImg] = useState('')
+  const { modalVisible, onCancel, onSubmit } = props;
+  const [loading, setLoading] = useState(false);
+  const [img, setImg] = useState('');
 
-  const [imgLoading, setImgLoading] = useState(false)
+  const [imgLoading, setImgLoading] = useState(false);
 
   const uploadButton = (
     <div>
-      {imgLoading ? <LoadingOutlined/> : <PlusOutlined/>}
-      <div style={{marginTop: 8}}>Upload</div>
+      {imgLoading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
 
@@ -41,25 +42,28 @@ const CreateForm = (props) => {
       return;
     }
     if (info.file.status === 'done') {
-      setImgLoading(false)
+      setImgLoading(false);
       // console.log(info.file.response.data)
-      setImg(`${ajaxPrefix}/file/${info.file.response.data}`)
+      setImg(`${ajaxPrefix}/file/${info.file.response.data}`);
     }
-  };
+  }
 
   function handleOk() {
-    setLoading(true)
+    setLoading(true);
     // form.submit()
-    form.validateFields().then(values => {
-      console.log(values)
-      onSubmit({
-        name:values.name,
-        img:values.img.file.response.data
+    form
+      .validateFields()
+      .then((values) => {
+        console.log(values);
+        onSubmit({
+          name: values.name,
+          img: values.img.file.response.data,
+        });
+        setLoading(false);
       })
-      setLoading(false)
-    }).catch(err => {
-      console.log(err)
-    })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   const checkPrice = (_, value) => {
@@ -68,7 +72,6 @@ const CreateForm = (props) => {
       return Promise.resolve();
     }
     return Promise.reject(new Error('请上传文件'));
-
   };
 
   return (
@@ -87,27 +90,19 @@ const CreateForm = (props) => {
         </Button>,
       ]}
     >
-      <Form
-        {...layout}
-        name="laboratory-consumables"
-        form={form}
-      >
+      <Form {...layout} name="laboratory-consumables" form={form}>
         <Form.Item
           label="耗材名称"
           name="name"
-          rules={[{required: true, message: '请输入耗材名称'}]}
+          rules={[{ required: true, message: '请输入耗材名称' }]}
         >
-          <Input placeholder="请输入耗材名称"/>
+          <Input placeholder="请输入耗材名称" />
         </Form.Item>
 
-        <Form.Item
-          label="图片"
-          name="img"
-          required
-          rules={[{validator: checkPrice}]}
-        >
+        <Form.Item label="图片" name="img" required rules={[{ validator: checkPrice }]}>
           <Upload
             name="file"
+            headers={{ Authorization: getToken() }}
             listType="picture-card"
             className="avatar-uploader"
             showUploadList={false}
@@ -116,10 +111,9 @@ const CreateForm = (props) => {
             // customRequest={doImgUpload}
             onChange={handleChange}
           >
-            {img ? <img src={img} alt="avatar" style={{width: '100%'}}/> : uploadButton}
+            {img ? <img src={img} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
           </Upload>
         </Form.Item>
-
       </Form>
     </Modal>
   );

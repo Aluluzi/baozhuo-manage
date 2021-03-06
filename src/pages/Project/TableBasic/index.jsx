@@ -1,9 +1,13 @@
 import React from 'react';
 import styles from './index.less';
-import {Button, Table} from 'antd';
+import {Button, Table, Modal} from 'antd';
+import style from "@/pages/UserInformation/Salesman/index.less";
+import {ExclamationCircleOutlined} from "@ant-design/icons";
+
+const {confirm} = Modal
 
 const CreateForm = (props) => {
-  const {toUpdate, data, pagination} = props
+  const {toUpdate, data, pagination, handleDel} = props
   // console.log(data)
 
   const columns = [
@@ -91,6 +95,13 @@ const CreateForm = (props) => {
       title: '收费标准',
       dataIndex: 'price',
       align: 'center',
+      render: (_, record) => (
+        <>
+          {
+            record.price / 100
+          }
+        </>
+      ),
     },
     {
       title: '临床应用',
@@ -114,11 +125,12 @@ const CreateForm = (props) => {
     },
     {
       title: '操作',
+      width: 180,
       dataIndex: 'option',
       align: 'center',
       valueType: 'option',
       render: (_, record) => (
-        <>
+        <div className={style.buttonGroup}>
           <Button
             type="primary"
             onClick={() => {
@@ -127,7 +139,27 @@ const CreateForm = (props) => {
           >
             编辑
           </Button>
-        </>
+          <Button
+            type="primary"
+            className='button-color-dust'
+            onClick={() => {
+              // console.log(record)
+              confirm({
+                title: '提示',
+                icon: <ExclamationCircleOutlined/>,
+                content: '是否删除？',
+                onOk() {
+                  handleDel(record)
+                },
+                onCancel() {
+                  console.log('Cancel');
+                },
+              });
+            }}
+          >
+            删除
+          </Button>
+        </div>
       ),
     },
   ];

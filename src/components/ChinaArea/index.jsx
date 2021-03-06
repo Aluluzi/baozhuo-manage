@@ -17,7 +17,7 @@ const {Option} = Select
  */
 const ChinaArea = (props) => {
   // console.log(props)
-  const {onChange} = props
+  const {onChange, value} = props
   const [province, setProvince] = useState(null);
   const [provinceList, setProvinceList] = useState([]);
   const [city, setCity] = useState(null);
@@ -65,32 +65,49 @@ const ChinaArea = (props) => {
   )
 
   function handleChange(v, type) {
-    const value = v || null
+    console.log(v)
+    const values = v || null
     let obj = {
       provinceId: province,
       cityId: city,
       areaId: area
     }
     if (type === 'province') {
-      obj = {...obj, ...{provinceId: value}}
-      setProvince(value)
+      obj = {provinceId: values, cityId: null, areaId: null}
+      setProvince(values)
       setCity(null)
       setArea(null)
-      getCitiesList(value)
+      setAreaList([])
+      if (values) {
+        getCitiesList(values)
+      } else {
+        setCityList([])
+      }
     } else if (type === 'cities') {
-      obj = {...obj, ...{cityId: value}}
-      setCity(value)
+      obj = {...obj, ...{cityId: values, areaId: null}}
+      setCity(values)
       setArea(null)
-      getAreaList(value)
+      if (values) {
+        getAreaList(values)
+      } else {
+        setAreaList([])
+      }
     } else if (type === 'area') {
-      obj = {...obj, ...{areaId: value}}
-      setArea(value)
+      obj = {...obj, ...{areaId: values}}
+      setArea(values)
     }
     onChange(obj)
   }
 
   useEffect(() => {
-    // console.log('useEffect');
+    // console.log(value);
+    if (value) {
+      setProvince(value.provinceId)
+      setCity(value.cityId)
+      setArea(value.areaId)
+      getCitiesList(value.provinceId)
+      getAreaList(value.cityId)
+    }
     getProvinceList();
   }, [getProvinceList]);
 

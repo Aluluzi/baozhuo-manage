@@ -8,12 +8,11 @@
 export default {
   dev: {
     '/apis': {
-      target: 'http://www.baozhuoyl.com',
+      target: 'https://admin.baozhuoyl.com',
       changeOrigin: true,
       pathRewrite: {
         '^/apis': '/',
       },
     },
-  }
+  },
 };
-

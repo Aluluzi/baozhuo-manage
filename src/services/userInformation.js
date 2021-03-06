@@ -9,6 +9,9 @@ export async function saveClinic(data) {
 export async function setStatusClinic(data) {
   return request('/api/clinic/set-status', { method: 'post', data });
 }
+export async function setSettleClinic(data) {
+  return request('/api/clinic/set-settle-method', { method: 'post', data });
+}
 export async function getDoctorList(data) {
   return request('/api/doctor/list', { method: 'post', data });
 }
@@ -28,5 +31,8 @@ export async function saveChgPassword(data) {
   return request('/api/user/chg-password', { method: 'post', data });
 }
 export async function setStatus(data) {
-  return request('/api/user/set-status', { method: 'post', data });
+  return request('/api/salesman/set-status', { method: 'post', data });
+}
+export async function setDoctorStatus(data) {
+  return request('/api/doctor/set-status', { method: 'post', data });
 }

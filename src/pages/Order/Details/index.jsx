@@ -4,8 +4,9 @@ import {PageContainer} from '@ant-design/pro-layout';
 import styles from './style.less';
 import {getOrderDetails, setBarcode} from "@/services/order";
 import {history} from 'umi'
-import {ajaxPrefix} from "@/utils/request";
+// import {ajaxPrefix} from "@/utils/request";
 import UpdateForm from "./components/UpdateForm";
+import PreviewFile from "./components/PreviewFile";
 
 const dicSex = {
   M: '男',
@@ -42,7 +43,9 @@ const doChgPassword = async (data) => {
 function Details() {
   const [stepFormValues, setStepFormValues] = useState({});
   const [updataModalVisible, setUpdataModalVisible] = useState(false);
+  const [showPreviewFile, setShowPreviewFile] = useState(false);
   const [list, setList] = useState({})
+  const [fileList, setFileList] = useState([])
   // 获取列表
   const getList = useCallback(async (id) => {
       // console.log(params.current)
@@ -56,10 +59,12 @@ function Details() {
     }, []
   )
 
-  function expectFile(url) {
-    if (url) {
-      window.open(`${ajaxPrefix}/file/${url}`)
-    }
+  function expectFile(l) {
+    setShowPreviewFile(true)
+    setFileList(l)
+    // if (url) {
+    //   window.open(`${ajaxPrefix}/file/${url}`)
+    // }
   }
 
   function editor(l) {
@@ -102,9 +107,9 @@ function Details() {
                 null
             }
             {
-              list.reports ?
-                <Button type="primary" className="button-color-green"
-                        onClick={() => expectFile(list.reportUrl)}>导出报告</Button>
+              list.reports && list.reports.length ?
+                <Button type="primary" className={[styles.but1, "button-color-green"]}
+                        onClick={() => expectFile(list.reports)}>报告列表</Button>
                 :
                 null
             }
@@ -195,6 +200,16 @@ function Details() {
           }}
           modalVisible={updataModalVisible}
           formValues={stepFormValues}
+        />
+      ) : null}
+      {showPreviewFile ? (
+        <PreviewFile
+          onCancel={() => {
+            setShowPreviewFile(false);
+            setFileList([]);
+          }}
+          modalVisible={showPreviewFile}
+          formValues={fileList}
         />
       ) : null}
     </PageContainer>

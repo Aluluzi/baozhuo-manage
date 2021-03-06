@@ -20,7 +20,7 @@ const CreateForm = (props) => {
   const uploadButton = (
     <div>
       {imgLoading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
+      <div style={{ marginTop: 8 }}>上传图片</div>
     </div>
   );
 

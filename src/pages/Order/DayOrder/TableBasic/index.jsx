@@ -78,7 +78,7 @@ const CreateForm = (props) => {
     {
       title: '报告信息',
       align: 'center',
-      dataIndex: 'reportUrl',
+      dataIndex: 'reports',
       render: (_, record) => (
         <>
           {

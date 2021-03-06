@@ -62,6 +62,7 @@ const handleUpdate = async (data, actionRef) => {
  * @param data
  */
 const doChgPassword = async (data) => {
+  console.log(data)
   const hide = message.loading('正在修改');
   try {
     await setSettleClinic(data);

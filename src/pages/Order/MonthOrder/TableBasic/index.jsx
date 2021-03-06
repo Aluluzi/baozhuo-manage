@@ -82,7 +82,7 @@ const CreateForm = (props) => {
       render: (_, record) => (
         <>
           {
-            record.reportUrl ? '已出' : '未出'
+            record.reports.length>0 ? '已出' : '未出'
           }
         </>
       ),

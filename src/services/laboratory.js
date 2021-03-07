@@ -18,6 +18,9 @@ export async function saveTube(data) {
 export async function setTubeStatus(data) {
   return request('/api/tube/set-status', { method: 'post', data });
 }
+export async function delTube(data) {
+  return request('/api/tube/delete', { method: 'post', data });
+}
 export async function getCategoryList(data) {
   return request('/api/category/list', { method: 'post', data });
 }

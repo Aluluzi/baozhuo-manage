@@ -1,15 +1,16 @@
-import {PlusOutlined} from '@ant-design/icons';
-import {Button, message, Modal, Image} from 'antd';
-import React, {useState, useRef} from 'react';
-import {PageContainer} from '@ant-design/pro-layout';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, message, Modal, Image } from 'antd';
+import React, { useState, useRef } from 'react';
+import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
-import {getTubeList, saveTube, setTubeStatus} from '@/services/laboratory';
-import {connect} from "umi";
-import {ExclamationCircleOutlined} from '@ant-design/icons';
-import {ajaxPrefix} from '@/utils/request'
+import { getTubeList, saveTube, setTubeStatus, delTube } from '@/services/laboratory';
+import { connect } from 'umi';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { ajaxPrefix } from '@/utils/request';
+import style from '@/pages/UserInformation/Salesman/index.less';
 
-const {confirm} = Modal;
+const { confirm } = Modal;
 
 /**
  * 添加节点
@@ -54,6 +55,29 @@ const handleUpdate = async (data, actionRef) => {
   }
 };
 
+/**
+ * 删除
+ * @param fields
+ */
+
+const handleDel = async (data, actionRef) => {
+  const hide = message.loading('正在删除');
+
+  try {
+    await delTube({
+      id: data.id,
+    });
+    hide();
+    message.success('删除成功');
+    actionRef.current.reload();
+    return true;
+  } catch (error) {
+    hide();
+    message.error('删除失败请重试！');
+    return false;
+  }
+};
+
 const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
@@ -61,7 +85,7 @@ const TableList = () => {
   const queryParams = useRef({
     size: null,
     page: null,
-    status: '1'
+    status: '1',
   });
   const columns = [
     {
@@ -70,14 +94,14 @@ const TableList = () => {
       dataIndex: 'id',
       align: 'center',
       hideInSearch: true,
-      hideInForm: true
+      hideInForm: true,
     },
     {
       title: '耗材类型',
       dataIndex: 'name',
       align: 'center',
       hideInSearch: true,
-      hideInForm: true
+      hideInForm: true,
     },
     {
       title: '图片',
@@ -87,9 +111,7 @@ const TableList = () => {
       hideInForm: true,
       render: (_, record) => (
         <>
-          <Image
-            width={40}
-            src={`${ajaxPrefix}/file/${record.img}`}/>
+          <Image width={40} src={`${ajaxPrefix}/file/${record.img}`} />
         </>
       ),
     },
@@ -99,7 +121,27 @@ const TableList = () => {
       align: 'center',
       valueType: 'option',
       render: (_, record) => (
-        <>
+        <div className={style.buttonGroup}>
+          <Button
+            type="primary"
+            className="button-color-sunset"
+            onClick={() => {
+              // console.log(record)
+              confirm({
+                title: '提示',
+                icon: <ExclamationCircleOutlined />,
+                content: '是否删除？',
+                onOk() {
+                  handleDel(record, actionRef);
+                },
+                onCancel() {
+                  console.log('Cancel');
+                },
+              });
+            }}
+          >
+            删除
+          </Button>
           <Button
             type="primary"
             className={record.status === 0 ? '' : 'button-color-dust'}
@@ -107,10 +149,10 @@ const TableList = () => {
               // console.log(record)
               confirm({
                 title: '提示',
-                icon: <ExclamationCircleOutlined/>,
+                icon: <ExclamationCircleOutlined />,
                 content: record.status === 0 ? '是否启用？' : '是否停用？',
                 onOk() {
-                  handleUpdate(record, actionRef)
+                  handleUpdate(record, actionRef);
                 },
                 onCancel() {
                   console.log('Cancel');
@@ -120,7 +162,7 @@ const TableList = () => {
           >
             {record.status === 0 ? '启用' : '停用'}
           </Button>
-        </>
+        </div>
       ),
     },
   ];
@@ -130,10 +172,10 @@ const TableList = () => {
         actionRef={actionRef}
         rowKey="id"
         bordered
-        pagination={{pageSize: 10}}
+        pagination={{ pageSize: 10 }}
         search={{
           labelWidth: 120,
-          optionRender: ({searchText}) => [
+          optionRender: ({ searchText }) => [
             <Button
               key="search"
               type="primary"
@@ -151,8 +193,8 @@ const TableList = () => {
               className="button-color-green"
               onClick={() => handleModalVisible(true)}
             >
-              <PlusOutlined/> 新建
-            </Button>
+              <PlusOutlined /> 新建
+            </Button>,
           ],
         }}
         toolBarRender={false}
@@ -162,10 +204,10 @@ const TableList = () => {
             ...{
               page: params.current,
               size: params.pageSize,
-            }
-          }
+            },
+          };
           // form.lastId =0 || params.current
-          const res = await getTubeList(form)
+          const res = await getTubeList(form);
 
           return {
             data: res.data.data,
@@ -202,6 +244,6 @@ const TableList = () => {
       ) : null}
     </PageContainer>
   );
-}
+};
 
 export default connect()(TableList);

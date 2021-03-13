@@ -1,7 +1,8 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Modal, Button, Form, Select, Input, Radio, Row, Space, InputNumber} from 'antd';
+import {Modal, Button, Form, Select, Input, Radio, Row, Space, InputNumber, Switch} from 'antd';
 import {MinusCircleOutlined, PlusCircleOutlined} from '@ant-design/icons';
 import {getTubeList} from "@/services/laboratory";
+import {getClinicList} from "@/services/userInformation";
 import debounce from 'lodash/debounce';
 import styles from './index.less';
 
@@ -16,6 +17,7 @@ const CreateForm = (props) => {
   const {modalVisible, onCancel, onSubmit, formValues} = props;
   const [loading, setLoading] = useState(false)
   const formData = useRef({
+    isPromotion: false,
     Tubes: [{
       fieldKey: 0,
       isListField: true,
@@ -27,10 +29,30 @@ const CreateForm = (props) => {
       isListField: true,
       key: 0,
       name: null
+    }],
+    Promotions: [{
+      fieldKey: 0,
+      isListField: true,
+      key: 0,
+      name: null
     }]
   })
   const [isCombo, setIsCombo] = useState(true)
+  const [isSpecial, setIsSpecial] = useState(false)
   const [labList, setLabList] = useState([])
+  const [clinicList, setClinicList] = useState([])
+
+  // 获取诊所列表
+  const getClinic = useCallback(
+    async () => {
+      try {
+        const res = await getClinicList({size: 100, page: 1, status: '1'});
+        setClinicList(res.data.data || [])
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  )
 
   // 获取耗材
   const getList = debounce(useCallback(
@@ -45,19 +67,27 @@ const CreateForm = (props) => {
   ), 800)
 
   useEffect(() => {
-    if(formValues.id){
+    if (formValues.id) {
       setIsCombo(formValues.isCombo)
+      setIsSpecial(formValues.isPromotion)
     }
     getList();
+    getClinic();
   }, []);
+
+  // 是否特殊项目
+  function handleChange(e) {
+    setIsSpecial(e)
+  }
 
   function handleOk() {
     setLoading(true)
     // form.submit()
     form.validateFields().then((values) => {
-      console.log(isCombo)
+      console.log(isSpecial)
       const s = {
         isCombo,
+        isPromotion: values.isPromotion,
         inspectionMethod: values.inspectionMethod,
         price: values.price * 100,
         name: values.name,
@@ -72,25 +102,40 @@ const CreateForm = (props) => {
           id: item.id
         }
       })
+
+      // 是否套餐
       if (isCombo) {
         s.items = values.items.map(item => {
           return {
             name: item.name,
-            // code: String(currentLab)
             code: item.code
           }
         })
       } else {
         s.code = values.code
       }
+
+      // 是否特殊项目
+      if (isSpecial) {
+        s.Promotions = values.Promotions.map(item => {
+          return {
+            price: parseInt(Number(item.price) * 100, 10),
+            clinicId: item.clinicId
+          }
+        })
+      } else {
+        s.Promotions = []
+      }
       // console.log(s)
       // 编辑状态增加id
       if (formValues.id) {
         s.id = formValues.id
       }
+      // console.log(s)
       onSubmit(s)
       setLoading(false)
     }).catch(err => {
+      setLoading(false)
       console.log(err)
     })
   }
@@ -151,34 +196,6 @@ const CreateForm = (props) => {
         >
           {(fields, {add, remove}) => (
             <>
-              {/* <Space style={{display: 'flex', justifyContent: 'center', marginBottom: 8, paddingLeft: 8}} */}
-              {/*       align="baseline" className={styles.spaceItem}> */}
-              {/*  <Form.Item */}
-              {/*    style={{width: "100%"}} */}
-              {/*    label="耗材" */}
-              {/*    name="id" */}
-              {/*    wrapperCol={{span: 28}} */}
-              {/*    required */}
-              {/*    rules={[{required: true, message: '请选择耗材'}]} */}
-              {/*  > */}
-              {/*    <Select */}
-              {/*      showSearch */}
-              {/*      filterOption={false} */}
-              {/*      placeholder='请选择选择耗材' */}
-              {/*      onSearch={getList} */}
-              {/*    > */}
-              {/*      { */}
-              {/*        labList.map((item) => ( */}
-              {/*          <Option value={item.id} key={item.id}>{item.name}</Option> */}
-              {/*        )) */}
-              {/*      } */}
-              {/*    </Select> */}
-              {/*  </Form.Item> */}
-              {/*  <PlusCircleOutlined */}
-              {/*    className="dynamic-delete-button" */}
-              {/*    onClick={() => add()} */}
-              {/*  /> */}
-              {/* </Space> */}
               {fields.map((field, index) => (
                 <Space style={{display: 'flex', justifyContent: 'center', marginBottom: 8, paddingLeft: 8}}
                        align="baseline" key={field.key} className={styles.spaceItem}>
@@ -221,27 +238,6 @@ const CreateForm = (props) => {
             <Form.List name="items">
               {(fields, {add, remove}) => (
                 <>
-                  {/* <Space style={{display: 'flex', justifyContent: 'center', marginBottom: 8, paddingLeft: 28}} */}
-                  {/*       align="baseline"> */}
-                  {/*  <Form.Item */}
-                  {/*    labelCol={{span: 10}} */}
-                  {/*    label="子项名称" */}
-                  {/*    name="name" */}
-                  {/*    required */}
-                  {/*    rules={[{required: true, message: '请输入子项名称'}]} */}
-                  {/*  > */}
-                  {/*    <Input placeholder="请输入子项名称"/> */}
-                  {/*  </Form.Item> */}
-                  {/*  <Form.Item */}
-                  {/*    label="代号" */}
-                  {/*    name="code" */}
-                  {/*    required */}
-                  {/*    rules={[{required: true, message: '请输入代号'}]} */}
-                  {/*  > */}
-                  {/*    <Input placeholder="请输入代号"/> */}
-                  {/*  </Form.Item> */}
-                  {/*  <PlusCircleOutlined onClick={() => add()}/> */}
-                  {/* </Space> */}
                   {fields.map((field, index) => (
                     <Space key={field.key}
                            style={{display: 'flex', justifyContent: 'center', marginBottom: 8, paddingLeft: 28}}
@@ -327,6 +323,67 @@ const CreateForm = (props) => {
         >
           <Input placeholder="请输其他备注"/>
         </Form.Item>
+        <Form.Item
+          label="是否特殊项目"
+          name="isPromotion"
+          valuePropName="checked"
+          rules={[{required: true, message: '是否特殊项目'}]}
+        >
+          <Switch onChange={handleChange}/>
+        </Form.Item>
+
+        {
+          isSpecial ?
+            <Form.List name="Promotions">
+              {(fields, {add, remove}) => (
+                <>
+                  {fields.map((field, index) => (
+                    <Space key={field.key}
+                           style={{display: 'flex', justifyContent: 'center', marginBottom: 8, paddingLeft: 58}}
+                           align="baseline">
+                      <Form.Item
+                        {...field}
+                        label="诊所"
+                        style={{width: 220}}
+                        labelCol={{span: 8}}
+                        name={[field.name, 'clinicId']}
+                        fieldKey={[field.fieldKey, 'first']}
+                        rules={[{required: true, message: '请选择诊所'}]}
+                      >
+                        <Select
+                          placeholder='请选择诊所'
+                        >
+                          {
+                            clinicList.map((item) => (
+                              <Option value={item.id} key={item.id}>{item.name}</Option>
+                            ))
+                          }
+                        </Select>
+                      </Form.Item>
+                      <Form.Item
+                        {...field}
+                        label="价格"
+                        labelCol={{span: 8}}
+                        name={[field.name, 'price']}
+                        fieldKey={[field.fieldKey, 'last']}
+                        rules={[{required: true, message: '请输入价格'}]}
+                      >
+                        <Input placeholder="请输入价格"/>
+                      </Form.Item>
+                      {
+                        index === 0 ?
+                          <PlusCircleOutlined onClick={() => add()}/>
+                          :
+                          <MinusCircleOutlined onClick={() => remove(field.name)}/>
+                      }
+                    </Space>
+                  ))}
+                </>
+              )}
+            </Form.List>
+            :
+            null
+        }
 
       </Form>
     </Modal>

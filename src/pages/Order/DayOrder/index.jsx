@@ -202,6 +202,7 @@ const Order = () => {
                   <RadioButton value="10">待付款</RadioButton>
                   <RadioButton value="20">未审核</RadioButton>
                   <RadioButton value="40">报告未出</RadioButton>
+                  <RadioButton value="45">部分报告已出</RadioButton>
                   <RadioButton value="60">报告已出</RadioButton>
                   <RadioButton value="50">已取消</RadioButton>
                 </RadioGroup>

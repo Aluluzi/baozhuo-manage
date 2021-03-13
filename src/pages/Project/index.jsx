@@ -62,12 +62,22 @@ const Project = () => {
     try {
       const res = await getInspectionItem({id: data.id})
       console.log(res)
-      const {Items, price, ...obj} = res.data;
+      const {Items, price, Promotions, ...obj} = res.data;
       setStepFormValues({
         ...obj,
         ...{
           price: price / 100,
           items: Items,
+          Promotions: Promotions ? Promotions.map(item => {
+            return {
+              price: item.price / 100,
+              // code: String(currentLab)
+              clinicId: item.clinicId
+            }
+          }) : [{
+            price: null,
+            clinicId: null
+          }]
         },
       });
       handleModalVisible(true);

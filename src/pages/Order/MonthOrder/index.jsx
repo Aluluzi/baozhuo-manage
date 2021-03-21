@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Form, Card, Radio, Row, Col, Input, DatePicker } from 'antd';
+import { Button, Form, Card, Radio, Row, Col, Input, DatePicker, message } from 'antd';
 import styles from './index.less';
 import TableBasic from './TableBasic';
-import { exportTrade, getOrderList } from '@/services/order';
+import { closeOrder, exportTrade, getOrderList } from '@/services/order';
 import { PageContainer } from '@ant-design/pro-layout';
 import StandardFormRow from '@/components/StandardFormRow';
 import { history } from 'umi';
@@ -83,6 +83,28 @@ const Order = () => {
       console.log(e);
     }
   }, []);
+
+  /**
+   * 删除
+   * @param fields
+   */
+
+  const handleDelete = async (d) => {
+    const hide = message.loading('正在删除');
+    try {
+      await closeOrder({
+        id: d.id,
+      });
+      hide();
+      message.success('删除成功');
+      getList();
+      return true;
+    } catch (error) {
+      hide();
+      message.error('删除失败请重试！');
+      return false;
+    }
+  };
 
   function handleOk() {
     getList();
@@ -272,6 +294,7 @@ const Order = () => {
             })
           }
           data={list}
+          handleDelete={handleDelete}
           pagination={pagination}
         />
       </Card>

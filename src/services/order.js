@@ -6,6 +6,9 @@ export async function getOrderList(data) {
 export async function setBarcode(data) {
   return request('/api/trade/set-barcode', { method: 'post', data });
 }
+export async function closeOrder(data) {
+  return request('/api/trade/close', { method: 'post', data });
+}
 export async function saveLab(data) {
   return request('/api/lab/save', { method: 'post', data });
 }

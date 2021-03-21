@@ -1,18 +1,24 @@
-import {PlusOutlined} from '@ant-design/icons';
-import {Button, Input, message, Modal, Select} from 'antd';
-import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {PageContainer} from '@ant-design/pro-layout';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Input, message, Modal, Select } from 'antd';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
-import {getClinicList, getDoctorList, saveChgPassword, saveDoctor, setDoctorStatus} from '@/services/userInformation';
-import {connect} from "dva";
-import {ExclamationCircleOutlined} from '@ant-design/icons';
-import style from "@/pages/UserInformation/Salesman/index.less";
-import ChinaArea from "@/components/ChinaArea";
+import {
+  getClinicList,
+  getDoctorList,
+  saveChgPassword,
+  saveDoctor,
+  setDoctorStatus,
+} from '@/services/userInformation';
+import { connect } from 'dva';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import style from '@/pages/UserInformation/Salesman/index.less';
+import ChinaArea from '@/components/ChinaArea';
 
-const {confirm} = Modal;
-const {Option} = Select
+const { confirm } = Modal;
+const { Option } = Select;
 
 /**
  * 添加节点
@@ -79,10 +85,10 @@ const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
   const [updataModalVisible, setUpdataModalVisible] = useState(false);
-  const [currentLab, setCurrentLab] = useState(null)
+  const [currentLab, setCurrentLab] = useState(null);
   // const [name, setName] = useState(null)
-  const [phone, setPhone] = useState(null)
-  const [labList, setLab] = useState([])
+  const [phone, setPhone] = useState(null);
+  const [labList, setLab] = useState([]);
   const actionRef = useRef();
   const queryParams = useRef({
     name: null,
@@ -91,27 +97,25 @@ const TableList = () => {
     page: null,
     provinceId: null,
     cityId: null,
-    areaId: null
+    areaId: null,
   });
 
-  // 获取实验室列表
-  const getLab = useCallback(
-    async () => {
-      try {
-        // queryParams.current = {...queryParams.current, ...{clinicId: 1}}
-        const res = await getClinicList({size: 100, page: 1});
-        const id = res.data.data ? res.data.data[0].id : null
-        queryParams.current = {...queryParams.current, ...{clinicId: id}}
-        setLab(res.data.data || [])
-        setCurrentLab(id)
-        setTimeout(() => {
-          actionRef.current.reload();
-        })
-      } catch (e) {
-        console.log(e)
-      }
-    }, []
-  )
+  // 获取诊所列表
+  const getLab = useCallback(async () => {
+    try {
+      // queryParams.current = {...queryParams.current, ...{clinicId: 1}}
+      const res = await getClinicList({ size: 100, page: 1 });
+      // const id = res.data.data ? res.data.data[0].id : null
+      queryParams.current = { ...queryParams.current, ...{ clinicId: null } };
+      setLab(res.data.data || []);
+      // setCurrentLab(id)
+      setTimeout(() => {
+        actionRef.current.reload();
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   useEffect(() => {
     getLab();
@@ -126,22 +130,27 @@ const TableList = () => {
       hideInTable: true,
       renderFormItem: () => {
         function handleChange(data) {
-          queryParams.current = {...queryParams.current, ...{clinicId: data}}
-          setCurrentLab(data)
-          actionRef.current.reloadAndRest()
+          queryParams.current = { ...queryParams.current, ...{ clinicId: data } };
+          setCurrentLab(data);
+          actionRef.current.reloadAndRest();
           // console.log(queryParams.current)
         }
 
         return (
-          <Select value={currentLab} style={{width: 120}} placeholder="诊所"
-                  onChange={(v) => handleChange(v)}>
-            {
-              labList.map((item) => (
-                <Option value={item.id} key={item.id}>{item.name}</Option>
-              ))
-            }
+          <Select
+            value={currentLab}
+            style={{ width: 120 }}
+            placeholder="请选择诊所"
+            onChange={(v) => handleChange(v)}
+          >
+            <Option value={null}>全部</Option>
+            {labList.map((item) => (
+              <Option value={item.id} key={item.id}>
+                {item.name}
+              </Option>
+            ))}
           </Select>
-        )
+        );
       },
     },
     {
@@ -152,12 +161,10 @@ const TableList = () => {
       hideInTable: true,
       renderFormItem: () => {
         function handleChange(data) {
-          queryParams.current = {...queryParams.current, ...data}
+          queryParams.current = { ...queryParams.current, ...data };
         }
 
-        return (
-          <ChinaArea onChange={handleChange}/>
-        )
+        return <ChinaArea onChange={handleChange} />;
       },
     },
     {
@@ -168,16 +175,15 @@ const TableList = () => {
       hideInForm: true,
       renderFormItem: () => {
         function handleChange(data) {
-          queryParams.current = {...queryParams.current, ...{name: data}}
+          queryParams.current = { ...queryParams.current, ...{ name: data } };
           // setName(data)
           // actionRef.current.reloadAndRest()
           // console.log(queryParams.current)
         }
 
         return (
-          <Input placeholder="请输入医生姓名"
-                 onChange={(v) => handleChange(v.target.value)}/>
-        )
+          <Input placeholder="请输入医生姓名" onChange={(v) => handleChange(v.target.value)} />
+        );
       },
     },
     {
@@ -188,16 +194,19 @@ const TableList = () => {
       hideInForm: true,
       renderFormItem: () => {
         function handleChange(data) {
-          queryParams.current = {...queryParams.current, ...{phone: data}}
-          setPhone(data)
+          queryParams.current = { ...queryParams.current, ...{ phone: data } };
+          setPhone(data);
           // actionRef.current.reloadAndRest()
           // console.log(queryParams.current)
         }
 
         return (
-          <Input value={phone} placeholder="请输入手机号码"
-                 onChange={(v) => handleChange(v.target.value)}/>
-        )
+          <Input
+            value={phone}
+            placeholder="请输入手机号码"
+            onChange={(v) => handleChange(v.target.value)}
+          />
+        );
       },
     },
     {
@@ -206,7 +215,7 @@ const TableList = () => {
       align: 'center',
       dataIndex: 'id',
       hideInSearch: true,
-      hideInForm: true
+      hideInForm: true,
     },
     {
       title: '类型',
@@ -214,13 +223,7 @@ const TableList = () => {
       dataIndex: 'roleType',
       hideInSearch: true,
       hideInForm: true,
-      render: (_, record) => (
-        <>
-          {
-            `${record.roleType === 3 ? '诊所' : '医生'}`
-          }
-        </>
-      ),
+      render: (_, record) => <>{`${record.roleType === 3 ? '诊所' : '医生'}`}</>,
     },
     {
       title: '诊所编号',
@@ -228,13 +231,7 @@ const TableList = () => {
       dataIndex: 'clinic',
       hideInSearch: true,
       hideInForm: true,
-      render: (_, record) => (
-        <>
-          {
-            `${record.clinic.id}`
-          }
-        </>
-      ),
+      render: (_, record) => <>{`${record.clinic.id}`}</>,
     },
     {
       title: '诊所名字',
@@ -242,13 +239,7 @@ const TableList = () => {
       dataIndex: 'clinic',
       hideInSearch: true,
       hideInForm: true,
-      render: (_, record) => (
-        <>
-          {
-            `${record.clinic.name}`
-          }
-        </>
-      ),
+      render: (_, record) => <>{`${record.clinic.name}`}</>,
     },
     {
       title: '医生姓名',
@@ -262,7 +253,7 @@ const TableList = () => {
       align: 'center',
       dataIndex: 'phone',
       hideInSearch: true,
-      hideInForm: true
+      hideInForm: true,
     },
     {
       title: '操作',
@@ -273,10 +264,10 @@ const TableList = () => {
         <div className={style.buttonGroup}>
           <Button
             type="primary"
-            className='button-color-green'
+            className="button-color-green"
             onClick={() => {
-              setUpdataModalVisible(true)
-              setStepFormValues({id: record.id})
+              setUpdataModalVisible(true);
+              setStepFormValues({ id: record.id });
             }}
           >
             修改密码
@@ -288,10 +279,10 @@ const TableList = () => {
               // console.log(record)
               confirm({
                 title: '提示',
-                icon: <ExclamationCircleOutlined/>,
+                icon: <ExclamationCircleOutlined />,
                 content: record.status === 0 ? '是否启用？' : '是否停用？',
                 onOk() {
-                  handleUpdate(record, actionRef)
+                  handleUpdate(record, actionRef);
                 },
                 onCancel() {
                   console.log('Cancel');
@@ -312,10 +303,10 @@ const TableList = () => {
         rowKey="id"
         bordered
         manualRequest
-        pagination={{pageSize: 10}}
+        pagination={{ pageSize: 10 }}
         search={{
           labelWidth: 120,
-          optionRender: ({searchText}) => [
+          optionRender: ({ searchText }) => [
             <Button
               key="search"
               type="primary"
@@ -333,8 +324,8 @@ const TableList = () => {
               className="button-color-green"
               onClick={() => handleModalVisible(true)}
             >
-              <PlusOutlined/> 新建
-            </Button>
+              <PlusOutlined /> 新建
+            </Button>,
           ],
         }}
         toolBarRender={false}
@@ -344,10 +335,10 @@ const TableList = () => {
             ...{
               page: params.current,
               size: params.pageSize,
-            }
-          }
+            },
+          };
           // form.lastId =0 || params.current
-          const res = await getDoctorList(form)
+          const res = await getDoctorList(form);
 
           return {
             data: res.data.data,
@@ -382,7 +373,7 @@ const TableList = () => {
       {updataModalVisible ? (
         <UpdateForm
           onSubmit={async (value) => {
-            const success = await doChgPassword(value)
+            const success = await doChgPassword(value);
 
             if (success) {
               setUpdataModalVisible(false);
@@ -402,6 +393,6 @@ const TableList = () => {
       ) : null}
     </PageContainer>
   );
-}
+};
 
 export default connect()(TableList);

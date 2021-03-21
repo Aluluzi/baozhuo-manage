@@ -5,12 +5,14 @@ import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
+import UpdateDoctor from './components/UpdateDoctor';
 import {
   getClinicList,
   getDoctorList,
   saveChgPassword,
   saveDoctor,
   setDoctorStatus,
+  editorDoctor,
 } from '@/services/userInformation';
 import { connect } from 'dva';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -80,11 +82,31 @@ const doChgPassword = async (data) => {
     return false;
   }
 };
+/**
+ * 修改账号
+ * @param data
+ */
+const doChgDoctor = async (data) => {
+  const hide = message.loading('正在修改');
+  try {
+    // console.log(data)
+    await editorDoctor(data);
+    hide();
+    message.success('修改成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('修改失败请重试！');
+    return false;
+  }
+};
 
 const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
+  const [doctorFormValues, setDoctorFormValues] = useState({});
   const [updataModalVisible, setUpdataModalVisible] = useState(false);
+  const [updateDoctorVisible, setUpdateDoctorVisible] = useState(false);
   const [currentLab, setCurrentLab] = useState(null);
   // const [name, setName] = useState(null)
   const [phone, setPhone] = useState(null);
@@ -274,6 +296,21 @@ const TableList = () => {
           </Button>
           <Button
             type="primary"
+            className="button-color-cyan"
+            onClick={() => {
+              setUpdateDoctorVisible(true);
+              setDoctorFormValues({
+                id: record.id,
+                clinicId: record.clinicId,
+                name: record.name,
+                phone: record.phone,
+              });
+            }}
+          >
+            编辑账号
+          </Button>
+          <Button
+            type="primary"
             className={record.status === 0 ? '' : 'button-color-dust'}
             onClick={() => {
               // console.log(record)
@@ -389,6 +426,27 @@ const TableList = () => {
           }}
           modalVisible={updataModalVisible}
           formValues={stepFormValues}
+        />
+      ) : null}
+      {updateDoctorVisible ? (
+        <UpdateDoctor
+          onSubmit={async (value) => {
+            const success = await doChgDoctor(value);
+
+            if (success) {
+              setUpdateDoctorVisible(false);
+              setDoctorFormValues({});
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+          onCancel={() => {
+            setUpdateDoctorVisible(false);
+            setDoctorFormValues({});
+          }}
+          modalVisible={updateDoctorVisible}
+          formValues={doctorFormValues}
         />
       ) : null}
     </PageContainer>

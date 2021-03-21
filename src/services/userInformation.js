@@ -18,6 +18,9 @@ export async function getDoctorList(data) {
 export async function saveDoctor(data) {
   return request('/api/user/save', { method: 'post', data });
 }
+export async function editorDoctor(data) {
+  return request('/api/doctor/save', { method: 'post', data });
+}
 export async function getSalesmanList(data) {
   return request('/api/user/list', { method: 'post', data });
 }

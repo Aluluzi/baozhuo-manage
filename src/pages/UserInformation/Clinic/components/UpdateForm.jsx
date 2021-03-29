@@ -23,7 +23,11 @@ const CreateForm = (props) => {
       } else {
         const {area, discount, ...obj} = values
         onSubmit({
-          ...area, ...obj, ...{discount: Number(discount), id: formValues.id, type: formValues.type},
+          ...area, ...obj, ...{
+            discount: Number(discount),
+            id: formValues.id,
+            type: formValues.type
+          },
           contactPhone: formValues.contactPhone
         })
       }
@@ -113,6 +117,20 @@ const CreateForm = (props) => {
                 rules={[{required: true, message: '请输入折扣，5折即输入50即可'}]}
               >
                 <Input placeholder="请输入折扣，5折即输入50即可"/>
+              </Form.Item>
+              <Form.Item
+                label="诊所联系人名"
+                name="contactName"
+                rules={[{required: true, message: '请输入诊所联系人名'}]}
+              >
+                <Input placeholder="请输入诊所联系人名"/>
+              </Form.Item>
+              <Form.Item
+                label="诊所联系人号码"
+                name="contactPhone"
+                rules={[{required: true, message: '请输入诊所联系人号码'}]}
+              >
+                <Input placeholder="请输入诊所联系人号码"/>
               </Form.Item>
             </>
         }

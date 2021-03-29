@@ -231,6 +231,7 @@ const TableList = () => {
               setStepFormValues({
                 id: record.id,
                 settleMethod: record.settleMethod,
+                contactName: record.contactName,
                 contactPhone: record.contactPhone,
                 area: {
                   provinceId: record.provinceId,

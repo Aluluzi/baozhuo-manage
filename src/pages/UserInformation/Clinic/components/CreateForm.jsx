@@ -94,11 +94,18 @@ const CreateForm = (props) => {
           <Input placeholder="请输入折扣，5折即输入50即可"/>
         </Form.Item>
         <Form.Item
-          label="业务员手机"
-          name="contactPhone"
-          rules={[{required: false, message: '请输入业务员手机号（选填）'}]}
+          label="诊所联系人名"
+          name="contactName"
+          rules={[{required: true, message: '请输入诊所联系人名'}]}
         >
-          <Input placeholder="请输入业务员手机号（选填）"/>
+          <Input placeholder="请输入诊所联系人名"/>
+        </Form.Item>
+        <Form.Item
+          label="诊所联系人号码"
+          name="contactPhone"
+          rules={[{required: true, message: '请输入诊所联系人号码'}]}
+        >
+          <Input placeholder="请输入诊所联系人号码"/>
         </Form.Item>
 
       </Form>

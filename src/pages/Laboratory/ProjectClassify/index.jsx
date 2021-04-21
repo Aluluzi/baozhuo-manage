@@ -1,16 +1,22 @@
-import {PlusOutlined} from '@ant-design/icons';
-import {Button, message, Modal, Select} from 'antd';
-import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {PageContainer} from '@ant-design/pro-layout';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, message, Modal, Select } from 'antd';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
-import {getCategoryList, getLabList, saveCategory, setCategoryStatus, deleteCategory} from '@/services/laboratory';
-import {connect} from "dva";
-import {ExclamationCircleOutlined} from '@ant-design/icons';
-import style from "@/pages/UserInformation/Salesman/index.less";
+import {
+  getCategoryList,
+  getLabList,
+  saveCategory,
+  setCategoryStatus,
+  deleteCategory,
+} from '@/services/laboratory';
+import { connect } from 'dva';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import style from '@/pages/UserInformation/Salesman/index.less';
 
-const {confirm} = Modal;
-const {Option} = Select
+const { confirm } = Modal;
+const { Option } = Select;
 
 /**
  * 添加节点
@@ -80,32 +86,30 @@ const handleUpdate = async (data, actionRef) => {
 const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [stepFormValues, setStepFormValues] = useState({});
-  const [currentLab, setCurrentLab] = useState(null)
-  const [labList, setLab] = useState([])
+  const [currentLab, setCurrentLab] = useState(null);
+  const [labList, setLab] = useState([]);
   const actionRef = useRef();
   const queryParams = useRef({
     labId: null,
     size: null,
-    page: null
+    page: null,
   });
 
   // 获取实验室列表
-  const getLab = useCallback(
-    async () => {
-      try {
-        const res = await getLabList({size: 100, page: 1});
-        const id = res.data.data ? res.data.data[0].id : null
-        queryParams.current = {...queryParams.current, ...{labId: id}}
-        setLab(res.data.data || [])
-        setCurrentLab(id)
-        setTimeout(() => {
-          actionRef.current.reload();
-        })
-      } catch (e) {
-        console.log(e)
-      }
-    }, []
-  )
+  const getLab = useCallback(async () => {
+    try {
+      const res = await getLabList({ size: 10000, page: 1 });
+      const id = res.data.data ? res.data.data[0].id : null;
+      queryParams.current = { ...queryParams.current, ...{ labId: id } };
+      setLab(res.data.data || []);
+      setCurrentLab(id);
+      setTimeout(() => {
+        actionRef.current.reload();
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
 
   useEffect(() => {
     getLab();
@@ -120,22 +124,26 @@ const TableList = () => {
       hideInTable: true,
       renderFormItem: () => {
         function handleChange(data) {
-          queryParams.current = {...queryParams.current, ...{labId: data}}
-          setCurrentLab(data)
-          actionRef.current.reloadAndRest()
+          queryParams.current = { ...queryParams.current, ...{ labId: data } };
+          setCurrentLab(data);
+          actionRef.current.reloadAndRest();
           // console.log(queryParams.current)
         }
 
         return (
-          <Select value={currentLab} style={{width: 120}} placeholder="实验室"
-                  onChange={(v) => handleChange(v, 'province')}>
-            {
-              labList.map((item) => (
-                <Option value={item.id} key={item.id}>{item.name}</Option>
-              ))
-            }
+          <Select
+            value={currentLab}
+            style={{ width: 120 }}
+            placeholder="实验室"
+            onChange={(v) => handleChange(v, 'province')}
+          >
+            {labList.map((item) => (
+              <Option value={item.id} key={item.id}>
+                {item.name}
+              </Option>
+            ))}
           </Select>
-        )
+        );
       },
     },
     {
@@ -144,21 +152,21 @@ const TableList = () => {
       align: 'center',
       valueType: 'index',
       hideInSearch: true,
-      hideInForm: true
+      hideInForm: true,
     },
     {
       title: '实验室',
       dataIndex: 'labName',
       align: 'center',
       hideInSearch: true,
-      hideInForm: true
+      hideInForm: true,
     },
     {
       title: '分类',
       align: 'center',
       dataIndex: 'name',
       hideInSearch: true,
-      hideInForm: true
+      hideInForm: true,
     },
     {
       title: '操作',
@@ -175,10 +183,10 @@ const TableList = () => {
                 // console.log(record)
                 confirm({
                   title: '提示',
-                  icon: <ExclamationCircleOutlined/>,
+                  icon: <ExclamationCircleOutlined />,
                   content: record.status === 0 ? '是否启用？' : '是否停用？',
                   onOk() {
-                    handleUpdate(record, actionRef)
+                    handleUpdate(record, actionRef);
                   },
                   onCancel() {
                     console.log('Cancel');
@@ -190,15 +198,15 @@ const TableList = () => {
             </Button>
             <Button
               type="primary"
-              className='button-color-sunset'
+              className="button-color-sunset"
               onClick={() => {
                 // console.log(record)
                 confirm({
                   title: '提示',
-                  icon: <ExclamationCircleOutlined/>,
+                  icon: <ExclamationCircleOutlined />,
                   content: '是否删除？',
                   onOk() {
-                    handleDelete(record, actionRef)
+                    handleDelete(record, actionRef);
                   },
                   onCancel() {
                     console.log('Cancel');
@@ -220,10 +228,10 @@ const TableList = () => {
         rowKey="id"
         bordered
         manualRequest
-        pagination={{pageSize: 10}}
+        pagination={{ pageSize: 10 }}
         search={{
           labelWidth: 120,
-          optionRender: ({searchText}) => [
+          optionRender: ({ searchText }) => [
             <Button
               key="search"
               type="primary"
@@ -241,8 +249,8 @@ const TableList = () => {
               className="button-color-green"
               onClick={() => handleModalVisible(true)}
             >
-              <PlusOutlined/> 新建
-            </Button>
+              <PlusOutlined /> 新建
+            </Button>,
           ],
         }}
         toolBarRender={false}
@@ -254,12 +262,12 @@ const TableList = () => {
               // labId: currentLab,
               page: params.current,
               size: params.pageSize,
-            }
-          }
+            },
+          };
           // form.lastId =0 || params.current
-          let obj = {}
+          let obj = {};
           try {
-            const res = await getCategoryList(form)
+            const res = await getCategoryList(form);
             obj = {
               data: res.data.data,
               // success 请返回 true，
@@ -269,9 +277,9 @@ const TableList = () => {
               total: res.data.total,
             };
           } catch (e) {
-            console.log(e)
+            console.log(e);
           }
-          return obj
+          return obj;
         }}
         columns={columns}
       />
@@ -299,6 +307,6 @@ const TableList = () => {
       ) : null}
     </PageContainer>
   );
-}
+};
 
 export default connect()(TableList);

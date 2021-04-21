@@ -126,7 +126,7 @@ const TableList = () => {
   const getLab = useCallback(async () => {
     try {
       // queryParams.current = {...queryParams.current, ...{clinicId: 1}}
-      const res = await getClinicList({ size: 100, page: 1 });
+      const res = await getClinicList({ size: 10000, page: 1 });
       // const id = res.data.data ? res.data.data[0].id : null
       queryParams.current = { ...queryParams.current, ...{ clinicId: null } };
       setLab(res.data.data || []);
